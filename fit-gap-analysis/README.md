@@ -2,7 +2,7 @@
 
 Knowledge-base capture of the IFRS 18 SAP adoption fit-gap analysis and
 project plan (originally produced in a Fit Gap Analysis chat session on
-Jul 9–13, 2026). This complements the [Demand Charter](../project-definition/)
+Jul 9–13, 2026). This complements the [Demand Charter](../demand-charter/)
 for demand 288 - IFRS 18.
 
 ## Contents

@@ -7,8 +7,8 @@ Usage:
     pip install python-pptx
     python3 generate_charter_pptx.py
 
-The output belongs in ../project-definition/ alongside the .md/.docx
-versions of the same charter; copy it there after regenerating.
+Run this from within demand-charter/; the output (.pptx) belongs
+alongside the .md/.docx versions of the same charter in this folder.
 """
 
 from pptx import Presentation

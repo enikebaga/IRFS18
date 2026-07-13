@@ -6,8 +6,8 @@ Usage:
     pip install python-docx
     python3 generate_charter_docx.py
 
-The output belongs in ../project-definition/ alongside the .md/.pptx
-versions of the same charter; copy it there after regenerating.
+Run this from within demand-charter/; the output (.docx) belongs
+alongside the .md/.pptx versions of the same charter in this folder.
 """
 
 from docx import Document

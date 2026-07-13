@@ -6,6 +6,9 @@ Generates '288-IFRS18-Demand-Charter.pptx', reproducing the company's
 Usage:
     pip install python-pptx
     python3 generate_charter_pptx.py
+
+The output belongs in ../project-definition/ alongside the .md/.docx
+versions of the same charter; copy it there after regenerating.
 """
 
 from pptx import Presentation

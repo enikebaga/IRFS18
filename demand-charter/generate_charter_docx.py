@@ -5,6 +5,9 @@ of the filled-in Demand Charter for demand 288 - IFRS 18.
 Usage:
     pip install python-docx
     python3 generate_charter_docx.py
+
+The output belongs in ../project-definition/ alongside the .md/.pptx
+versions of the same charter; copy it there after regenerating.
 """
 
 from docx import Document

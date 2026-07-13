@@ -4,6 +4,10 @@
 > lists are illustrative starting points based on typical IFRS 18 transition
 > programs — please validate/adjust with Finance, Controlling, and IT before
 > sign-off.
+>
+> This content is also available as `288-IFRS18-Demand-Charter.docx` (Word,
+> for the knowledge base) and `288-IFRS18-Demand-Charter.pptx` (slide matching
+> the original template layout) in this same folder.
 
 | Field | Value |
 |---|---|

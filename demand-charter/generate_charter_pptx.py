@@ -110,7 +110,7 @@ labels = [
     ("Demand\nManager", 1.3, HEADER_BLUE, WHITE),
     ("Enik\u0151 Baga", 2.6, LIGHT_GRAY, BLACK),
     ("E2E /\nCore Proc.", 1.3, HEADER_BLUE, WHITE),
-    ("Finance \u2013 Accounting &\nFinancial Reporting (R2R)", 2.7, LIGHT_GRAY, BLACK),
+    ("Finance \u2013 Accounting &\nFinancial Reporting", 2.7, LIGHT_GRAY, BLACK),
     ("Security\nClassif.", 1.1, HEADER_BLUE, WHITE),
     ("Internal", 1.4, LIGHT_GRAY, BLACK),
 ]
@@ -145,33 +145,34 @@ set_text(h2, "Business Objectives and High-Level Demand Description", size=12, b
 body1 = add_box(slide, left1, section_y + section_header_h, col_w, section_body_h,
                  fill_color=LIGHT_GRAY)
 add_bullets(body1, [
-    "IAS 1 today does not mandate P&L categories/subtotals \u2192 inconsistent "
-    "presentation across entities and limited peer comparability.",
-    "No formal governance for management-defined performance measures (MPMs) "
-    "used in investor communications \u2192 audit/compliance risk.",
-    "Chart of accounts and consolidation/reporting system not structured to "
-    "auto-classify P&L lines into operating / investing / financing.",
-    "Alternative performance measures produced via manual spreadsheets with "
-    "limited audit trail.",
-    "Inconsistent aggregation/disaggregation of line items across business units.",
-    "No dedicated budget/resourcing yet assigned for IFRS 18 readiness.",
+    "No fixed structure today, so different teams present profit & loss "
+    "differently \u2192 hard to compare across the company or with peers.",
+    "No clear, approved process for our \"adjusted\" performance numbers "
+    "shown to investors \u2192 risk once we must explain how they're calculated.",
+    "Our systems don't automatically sort P&L items into the 3 new "
+    "required groups: Operating, Investing, Financing.",
+    "Adjusted performance numbers are built by hand in spreadsheets \u2014 "
+    "slow, error-prone, and hard for auditors to check.",
+    "Business units group similar costs differently; the new rule needs "
+    "much more consistency here.",
+    "No dedicated time or budget yet assigned to prepare for this change.",
 ], size=10.5)
 
 body2 = add_box(slide, left2, section_y + section_header_h, col_w, section_body_h,
                  fill_color=LIGHT_GRAY)
 add_bullets(body2, [
-    "Achieve full IFRS 18 compliance before mandatory effective date "
-    "(periods beginning \u2265 1 Jan 2027; comparatives from 1 Jan 2026).",
-    "Gap assessment of chart of accounts, consolidation system and "
-    "disclosure templates vs. the 3 new categories & 2 new subtotals.",
-    "Define & govern Management-Defined Performance Measures (MPMs), "
-    "incl. required reconciliation disclosures.",
-    "Reconfigure P&L structure, CoA mapping and consolidation tool for "
-    "native category/subtotal reporting.",
-    "Update statutory templates, disclosure checklists and cash-flow "
-    "reconciliation logic; train Finance/Controlling/IR.",
-    "Run a parallel/dry-run cycle and align with external auditors on "
-    "transition approach.",
+    "Be fully ready for IFRS 18 before it's mandatory (years starting "
+    "on/after 1 Jan 2027; last year's figures restated from 1 Jan 2026).",
+    "Check what needs to change in our accounts, systems and templates "
+    "for the 3 new groups & 2 new required subtotals.",
+    "Set clear, approved rules for our \"adjusted\" performance numbers, "
+    "incl. showing how they connect back to the official numbers.",
+    "Update our P&L structure, account mapping and reporting system so "
+    "the new groups/subtotals are produced automatically.",
+    "Update official templates, checklists and cash-flow statement; "
+    "train Finance/Controlling/Investor Relations.",
+    "Run a test/dry-run cycle and work with our external auditors on "
+    "how we make the change.",
 ], size=10.5)
 
 # ---- Benefits & Stakeholders & Allocations banner ------------------------
@@ -190,26 +191,26 @@ col4_w = Inches(3.1625)
 col4_titles = ["Qualitative Benefits", "Quantitative Benefits", "Stakeholders", "Allocations Demand"]
 col4_bullets = [
     [
-        "Full compliance with mandatory standard; avoids audit qualification.",
-        "Improved comparability/transparency for investors via standardized subtotals.",
-        "Stronger governance/audit trail over non-GAAP measures.",
-        "Harmonized P&L supports statutory & management reporting.",
-        "Reduced manual effort/error risk at close.",
+        "We follow the new mandatory rule, avoiding audit and regulatory risk.",
+        "Our statements become easier to compare, for our teams and investors.",
+        "Clearer, better-documented rules for our adjusted performance numbers.",
+        "Simpler, more consistent P&L for both official and internal reporting.",
+        "Less manual work and fewer mistakes at closing time.",
     ],
     [
-        "Reduced manual closing/adjustment effort per cycle once automated "
-        "(FTE-days TBD after design phase).",
-        "Avoidance of one-off remediation costs (advisory, late changes, "
-        "audit findings) from a rushed transition.",
-        "Precise figures to be confirmed after gap assessment.",
+        "Less manual work each closing cycle once the system sorts things "
+        "automatically (exact savings TBD after detailed review).",
+        "We avoid extra costs (advisors, rushed fixes, audit findings) from "
+        "leaving this until the last minute.",
+        "Exact figures to be confirmed after the initial review.",
     ],
     [
         "Group Finance / Corporate Accounting (owner)",
         "Group Controlling / FP&A",
         "Investor Relations",
-        "Consolidation & Reporting Systems / IT",
+        "IT / Reporting Systems team",
         "Internal Audit & External Auditors",
-        "Business Unit Controllers",
+        "Local Finance teams (Business Units)",
     ],
     None,  # handled separately below
 ]
@@ -225,10 +226,10 @@ for i in range(4):
     else:
         set_text(
             body,
-            "Demand effort CIT (PD):\n~40 PD (illustrative; IT/consolidation "
-            "system config, CoA mapping, reports)\n\n"
-            "Demand effort BG (PD):\n~25 PD (illustrative; gap assessment, "
-            "MPM governance, policy, training)",
+            "Demand effort CIT (PD):\n~40 person-days (rough estimate; "
+            "updating IT systems, accounts, reports)\n\n"
+            "Demand effort BG (PD):\n~25 person-days (rough estimate; "
+            "reviewing changes, setting rules, training)",
             size=9.5,
         )
     x += col4_w + Emu(0)

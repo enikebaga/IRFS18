@@ -79,8 +79,9 @@ run.font.size = Pt(24)
 
 doc.add_paragraph(
     "Knowledge-base copy of the filled-in Demand Charter for demand 288 "
-    "(IFRS 18 Implementation). See also the .md and .pptx versions in this "
-    "folder; all three contain the same content."
+    "(IFRS 18 Implementation), written in plain, easy-to-understand "
+    "language. See also the .md and .pptx versions in this folder; all "
+    "three contain the same content."
 ).italic = True
 
 # ---- Header info table ----------------------------------------------------
@@ -90,7 +91,7 @@ header_labels = ["Titel", "Demand Manager", "E2E / Core Proc.", "Security Classi
 header_values = [
     "288 - IFRS 18",
     "Enik\u0151 Baga",
-    "Finance \u2013 Accounting & Financial Reporting (R2R)",
+    "Finance \u2013 Accounting & Financial Reporting",
     "Internal",
 ]
 for i, (label, value) in enumerate(zip(header_labels, header_values)):
@@ -109,46 +110,47 @@ section_table = doc.add_table(rows=2, cols=2)
 section_table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
 h1 = section_table.rows[0].cells[0]
-set_cell_text(h1, "Current Situation and Pain Points", bold=True,
+set_cell_text(h1, "What's the problem today?\n(Current Situation and Pain Points)", bold=True,
               color=RGBColor(0xFF, 0xFF, 0xFF), align=WD_ALIGN_PARAGRAPH.CENTER)
 shade_cell(h1, "8EA9DB")
 
 h2 = section_table.rows[0].cells[1]
-set_cell_text(h2, "Business Objectives and High-Level Demand Description", bold=True,
+set_cell_text(h2, "What are we trying to achieve?\n(Business Objectives and High-Level Demand Description)", bold=True,
               color=RGBColor(0xFF, 0xFF, 0xFF), align=WD_ALIGN_PARAGRAPH.CENTER)
 shade_cell(h2, "8EA9DB")
 
 pain_points = [
-    "IAS 1 today does not mandate P&L categories/subtotals \u2192 inconsistent "
-    "presentation across entities and limited peer comparability.",
-    "No formal governance for management-defined performance measures (MPMs) "
-    "used in investor communications \u2192 audit/compliance risk.",
-    "Chart of accounts and consolidation/reporting system not structured to "
-    "auto-classify P&L lines into operating / investing / financing.",
-    "Alternative performance measures produced via manual spreadsheets with "
-    "limited audit trail.",
-    "Inconsistent aggregation/disaggregation of line items across business units.",
-    "No dedicated budget/resourcing yet assigned for IFRS 18 readiness.",
-    "External auditors not yet formally engaged on transition approach or "
-    "comparative restatement.",
+    "No fixed structure today, so different teams present profit & loss "
+    "differently \u2192 hard to compare across the company or with peers.",
+    "No clear, approved process for our \u201cadjusted\u201d performance numbers "
+    "shown to investors \u2192 risk once we must explain how they're calculated.",
+    "Our systems don't automatically sort P&L items into the 3 new required "
+    "groups: Operating, Investing, Financing.",
+    "Adjusted performance numbers are built by hand in spreadsheets \u2014 "
+    "slow, error-prone, and hard for auditors to check.",
+    "Business units group similar costs differently; the new rule needs "
+    "much more consistency here.",
+    "No dedicated time or budget yet assigned to prepare for this change.",
+    "We haven't yet talked to our external auditors about how we'll make "
+    "this change or restate last year's numbers.",
 ]
 b1 = section_table.rows[1].cells[0]
 add_bullets(b1, pain_points)
 shade_cell(b1, "CFD3DA")
 
 objectives = [
-    "Achieve full IFRS 18 compliance before the mandatory effective date "
-    "(periods beginning \u2265 1 Jan 2027; comparatives from 1 Jan 2026).",
-    "Gap assessment of chart of accounts, consolidation system and disclosure "
-    "templates vs. the 3 new categories & 2 new subtotals.",
-    "Define & govern Management-Defined Performance Measures (MPMs), incl. "
-    "required reconciliation disclosures.",
-    "Reconfigure P&L structure, CoA mapping and consolidation tool for native "
-    "category/subtotal reporting.",
-    "Update statutory templates, disclosure checklists and cash-flow "
-    "reconciliation logic; train Finance/Controlling/IR.",
-    "Run a parallel/dry-run reporting cycle and align with external auditors "
-    "on the transition approach.",
+    "Be fully ready for IFRS 18 before it's mandatory (years starting "
+    "on/after 1 Jan 2027; last year's figures restated from 1 Jan 2026).",
+    "Check what needs to change in our chart of accounts, reporting system "
+    "and templates for the 3 new groups & 2 new required subtotals.",
+    "Set clear, approved rules for our \u201cadjusted\u201d performance numbers, "
+    "incl. showing how they connect back to the official numbers.",
+    "Update our P&L structure, account mapping and reporting system so the "
+    "new groups/subtotals are produced automatically.",
+    "Update official templates, checklists and cash-flow statement; train "
+    "Finance/Controlling/Investor Relations.",
+    "Run a test/dry-run reporting cycle and work with our external auditors "
+    "on how we make the change.",
 ]
 b2 = section_table.rows[1].cells[1]
 add_bullets(b2, objectives)
@@ -176,27 +178,27 @@ for i, t in enumerate(titles):
     shade_cell(c, "F4B183")
 
 qualitative = [
-    "Full compliance with mandatory standard; avoids audit qualification.",
-    "Improved comparability/transparency for investors via standardized subtotals.",
-    "Stronger governance/audit trail over non-GAAP measures.",
-    "Harmonized P&L supports statutory & management reporting.",
-    "Reduced manual effort/error risk at close.",
+    "We follow the new mandatory rule, avoiding audit and regulatory risk.",
+    "Our financial statements become easier to compare, for our teams and investors.",
+    "Clearer, better-documented rules for our adjusted performance numbers.",
+    "Simpler, more consistent P&L for both official and internal reporting.",
+    "Less manual work and fewer mistakes at closing time.",
 ]
 quantitative = [
-    "Reduced manual closing/adjustment effort per cycle once automated "
-    "(FTE-days TBD after design phase).",
-    "Avoidance of one-off remediation costs (advisory, late changes, audit "
-    "findings) from a rushed transition.",
-    "Precise figures to be confirmed after gap assessment.",
+    "Less manual work each closing cycle once the system sorts things "
+    "automatically (exact savings TBD after detailed review).",
+    "We avoid extra costs (advisors, rushed fixes, audit findings) from "
+    "leaving this until the last minute.",
+    "Exact figures to be confirmed after the initial review.",
 ]
 stakeholders = [
     "Group Finance / Corporate Accounting (owner)",
     "Group Controlling / FP&A",
     "Investor Relations",
-    "Consolidation & Reporting Systems / IT",
+    "IT / Reporting Systems team",
     "Internal Audit & External Auditors",
-    "Business Unit Controllers",
-    "Company Secretary / Legal (if applicable)",
+    "Local Finance teams (Business Units)",
+    "Legal / Company Secretary (if applicable)",
 ]
 
 c0 = four_table.rows[1].cells[0]
@@ -214,10 +216,10 @@ shade_cell(c2, "CFD3DA")
 c3 = four_table.rows[1].cells[3]
 set_cell_text(
     c3,
-    "Demand effort CIT (PD):\n~40 PD (illustrative; IT/consolidation system "
-    "config, CoA mapping, reports)\n\n"
-    "Demand effort BG (PD):\n~25 PD (illustrative; gap assessment, MPM "
-    "governance, policy, training)",
+    "Demand effort CIT (PD):\n~40 person-days (rough estimate; updating "
+    "IT systems, accounts, reports)\n\n"
+    "Demand effort BG (PD):\n~25 person-days (rough estimate; reviewing "
+    "changes, setting rules, training)",
     size=9.5,
 )
 shade_cell(c3, "CFD3DA")

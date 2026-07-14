@@ -1,124 +1,126 @@
 # Demand Charter — 288 — IFRS 18
 
-> Filled in from the standard Demand Charter template. Estimates and stakeholder
-> lists are illustrative starting points based on typical IFRS 18 transition
-> programs — please validate/adjust with Finance, Controlling, and IT before
-> sign-off.
+> Filled in from the standard Demand Charter template, written in plain,
+> easy-to-understand language so anyone in the business can follow it —
+> not just accounting specialists. Estimates and stakeholder lists are
+> illustrative starting points — please validate/adjust with Finance,
+> Controlling, and IT before sign-off.
 >
-> This content is also available as `288-IFRS18-Demand-Charter.docx` (Word,
-> for the knowledge base) and `288-IFRS18-Demand-Charter.pptx` (slide matching
-> the original template layout) in this same folder.
+> This content is also available as `288-IFRS18-Demand-Charter.docx`
+> (Word, for the knowledge base) and `288-IFRS18-Demand-Charter.pptx`
+> (slide matching the original template layout) in this same folder.
 
 | Field | Value |
 |---|---|
 | **Titel** | 288 - IFRS 18 |
 | **Demand Manager** | Enikő Baga |
-| **E2E / Core Proc.** | Finance – Accounting & Financial Reporting (Record-to-Report) |
+| **E2E / Core Proc.** | Finance – Accounting & Financial Reporting |
 | **Security Classif.** | Internal |
 
-## Current Situation and Pain Points
+## What's the problem today? (Current Situation and Pain Points)
 
-- Income statement presentation today follows IAS 1, which does not mandate
-  categories or subtotals — this leads to inconsistent P&L structures across
-  entities/business units and limited comparability with peers who will adopt
-  IFRS 18.
-- There is no formal governance process for defining, approving, and
-  disclosing management-defined performance measures (MPMs) / non-GAAP
-  measures used in investor communications, creating audit and compliance
-  exposure once mandatory MPM reconciliation disclosures apply.
-- The chart of accounts and the consolidation/reporting system (e.g. SAP
-  Group Reporting, BPC, or equivalent BI/EPM tooling) are not structured to
-  automatically classify P&L line items into the new "operating,"
-  "investing," and "financing" categories.
-- Alternative performance measures are currently produced via manual,
-  spreadsheet-based adjustments with a limited audit trail, which will not
-  satisfy the stricter disclosure and reconciliation requirements.
-- Aggregation/disaggregation of line items (e.g. use of catch-all captions
-  such as "other expenses") is inconsistent across business units and will
-  not meet IFRS 18's new principles on grouping items with shared
-  characteristics.
-- The statutory close calendar has limited buffer for structural changes,
-  and no dedicated resourcing or budget has yet been assigned to an IFRS 18
-  readiness assessment.
-- External auditors have not yet been formally engaged on the transition
-  approach, comparative restatement, or first-time application disclosures.
+- Right now, there's no fixed structure we must follow when presenting our
+  income statement — so different teams and business units present profit
+  and loss differently. This makes it hard to compare results across the
+  company, or against other companies that will follow the new rule.
+- We don't have a clear, approved process for deciding on and explaining
+  the "extra" performance numbers (things like adjusted profit) that we
+  share with investors. Once the new rule requires us to show exactly how
+  those numbers are calculated, this gap could create real risk.
+- Our chart of accounts and reporting system aren't set up to
+  automatically sort profit-and-loss items into the three new required
+  groups: **Operating, Investing, and Financing**.
+- Today we build our adjusted performance numbers by hand in spreadsheets.
+  That's slow, easy to get wrong, and hard for auditors to check.
+- Different business units group similar costs differently (for example,
+  everyone has their own idea of what counts as "other expenses"). The
+  new rule requires much more consistency here.
+- Our year-end closing schedule has little spare room for a big
+  structural change, and no one has yet been given dedicated time or
+  budget to check what needs to change.
+- We haven't yet talked to our external auditors about how we'll make
+  this change or how last year's numbers will need to be restated for
+  comparison.
 
-## Business Objectives and High-Level Demand Description
+## What are we trying to achieve? (Business Objectives and High-Level Demand Description)
 
-- Achieve full compliance with **IFRS 18 – Presentation and Disclosure in
-  Financial Statements** ahead of the mandatory effective date (annual
-  reporting periods beginning on or after **1 January 2027**, with
-  comparative-period figures needing to be restated from **1 January 2026**).
-- Perform a **gap assessment** of the current chart of accounts,
-  consolidation system, and disclosure/reporting templates against:
-  - the three new mandatory income statement categories (operating,
-    investing, financing);
-  - the two new required subtotals (operating profit; profit before
-    financing and income tax);
-  - the new aggregation/disaggregation principles.
-- Define and formally **govern Management-Defined Performance Measures
-  (MPMs)**, including the required note disclosure, tax/NCI effects, and
-  reconciliation to the nearest IFRS-defined subtotal.
-- Redesign/reconfigure the P&L reporting structure, chart-of-accounts
-  mapping, and consolidation/reporting tool to natively produce the new
-  categories and subtotals.
-- Update statutory financial statement templates, disclosure checklists, and
-  cash-flow statement reconciliation logic (operating profit as the
-  mandatory starting point for the indirect method).
-- Update accounting policy manuals and deliver **training** to Finance,
-  Controlling, and Investor Relations teams.
-- Run a **parallel / dry-run reporting cycle** ahead of go-live to validate
-  outputs, comparative restatement, and disclosure completeness.
-- Coordinate with **external auditors** on the transition approach,
-  first-time application disclosures, and comparative restatement.
+- Be fully ready for the new accounting rule, **IFRS 18**, before it
+  becomes mandatory. It applies to financial years starting on or after
+  **1 January 2027**, and last year's comparison figures will need to be
+  restated starting from **1 January 2026** — so we need to be ready
+  earlier than that.
+- Check what needs to change in our chart of accounts, our reporting
+  system, and our report templates, specifically:
+  - the three new required groups (Operating, Investing, Financing);
+  - the two new required subtotals ("Operating Profit" and "Profit
+    before Financing and Income Tax");
+  - the new, stricter rules on how similar items must be grouped
+    together in reports.
+- Create clear, approved rules for how we define our "adjusted"
+  performance numbers, including how we show they connect back to the
+  official numbers in our accounts.
+- Update our profit-and-loss structure, account mapping, and reporting
+  system so the new groups and subtotals are produced automatically —
+  not built by hand.
+- Update our official financial statement templates, checklists, and
+  cash-flow statement so everything follows the new rule.
+- Update our accounting policies and train the Finance, Controlling, and
+  Investor Relations teams on how things will work going forward.
+- Run a **test/dry-run reporting cycle** before go-live, to make sure
+  everything produces the right numbers.
+- Work closely with our **external auditors** on how we make the change
+  and how we handle last year's comparison numbers.
 
-## Benefits & Stakeholders & Allocations
+## Why is this worth doing? (Benefits & Stakeholders & Allocations)
 
-### Qualitative Benefits
+### Qualitative Benefits (things that are hard to put a number on, but matter)
 
-- Full compliance with a mandatory new accounting standard, avoiding audit
-  qualification and regulatory risk.
-- Improved comparability and transparency of financial statements for
-  investors and analysts through standardized subtotals across all IFRS
-  preparers.
-- Stronger governance and audit trail over non-GAAP / management
-  performance measures, reducing reputational and regulatory risk.
-- A more robust, harmonized P&L structure that supports both statutory and
-  management reporting from a single source.
-- Reduced manual effort and error risk at period-end close through
-  system-driven categorization instead of spreadsheet workarounds.
+- We follow the new mandatory rule, avoiding audit problems and
+  regulatory risk.
+- Our financial statements become easier to compare — both for our own
+  teams and for outside investors and analysts.
+- We have clearer, better-documented rules for our "adjusted" performance
+  numbers, which lowers reputational and compliance risk.
+- Our profit-and-loss structure becomes simpler and more consistent,
+  useful for both official reporting and day-to-day management reporting.
+- We reduce manual work and the risk of mistakes at closing time, because
+  the system sorts things automatically instead of relying on
+  spreadsheets.
 
-### Quantitative Benefits
+### Quantitative Benefits (things we can put a number on)
 
-- Reduction in manual closing/adjustment effort per reporting cycle once
-  automated categorization is implemented (FTE-days saved per quarter — to
-  be quantified during the detailed design phase).
-- Avoidance of one-off remediation costs (external advisory, late system
-  changes, audit findings) that would arise from a non-compliant or rushed
-  transition.
-- *Precise figures to be confirmed after the gap assessment; not yet
+- Less manual work each closing cycle once the system does the sorting
+  automatically (exact time savings to be worked out once we've done a
+  detailed review).
+- We avoid extra costs — outside advisors, rushed last-minute fixes, audit
+  findings — that we'd likely face if we left this until the last minute.
+- *Exact figures will be confirmed after the initial review; not yet
   quantified in the source template.*
 
-### Stakeholders
+### Stakeholders (who's involved)
 
-- Group Finance / Corporate Accounting — process owner
-- Group Controlling / FP&A — impact on management reporting & MPMs
-- Investor Relations — MPM definitions & external communication
-- Consolidation & Reporting Systems / IT — system and chart-of-accounts changes
-- Internal Audit & External Auditors — review of transition approach
-- Business Unit Controllers — local chart-of-accounts / reporting impact
-- Company Secretary / Legal — disclosure governance, if applicable
+- **Group Finance / Corporate Accounting** — owns this project
+- **Group Controlling / FP&A** — affected by changes to internal
+  management reporting
+- **Investor Relations** — needs to explain the new numbers to investors
+- **IT / Reporting Systems team** — needs to update the systems and
+  chart of accounts
+- **Internal Audit & External Auditors** — review how we make the change
+- **Local Finance teams (Business Units)** — affected by local reporting
+  changes
+- **Legal / Company Secretary** — involved if formal disclosure sign-off
+  is required
 
-### Allocations Demand
+### Allocations Demand (rough effort estimate)
 
 | Allocation | Estimate |
 |---|---|
-| Demand effort CIT (PD) | ~40 PD *(illustrative — IT/consolidation-system configuration, chart-of-accounts mapping, report & template changes; to be refined with IT)* |
-| Demand effort BG (PD) | ~25 PD *(illustrative — business/Finance: gap assessment, MPM governance, policy updates, training, dry-run coordination; to be refined with Finance)* |
+| Demand effort CIT (PD) | ~40 person-days *(rough estimate — updating IT systems, chart of accounts, reports and templates; to be refined with IT)* |
+| Demand effort BG (PD) | ~25 person-days *(rough estimate — business/Finance work: reviewing what needs to change, setting rules, training, testing; to be refined with Finance)* |
 
 ---
-*This document is a first draft of the Demand Charter for demand 288 (IFRS
-18), prepared to unblock kickoff. The effort estimates under "Allocations
-Demand" and the quantitative benefits are placeholders and should be
-reviewed and confirmed by the Demand Manager and the relevant IT/Finance
-leads before formal approval.*
+*This document is a first draft of the Demand Charter for demand 288
+(IFRS 18), written in plain language to unblock kickoff. The effort
+estimates under "Allocations Demand" and the quantitative benefits are
+placeholders and should be reviewed and confirmed by the Demand Manager
+and the relevant IT/Finance leads before formal approval.*

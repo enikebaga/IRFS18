@@ -35,12 +35,13 @@ for demand 288 - IFRS 18.
   — a plain-language explainer of IFRS 18 (new P&L categories, required
   subtotals, MPM rules incl. tax/NCI reconciliation detail, aggregation/
   disaggregation, IAS 7 cash-flow reclassification), SAP's confirmed
-  roadmap (per Note 3670330), and a detailed summary of SAP Group
-  Reporting's IFRS 18 capabilities and upcoming reference-content update
-  (Scope Item 1SG) per an SAP+PwC Community blog — including notes on how
-  each piece relates (or doesn't) to this specific (HFM-based) landscape,
-  and a correction of an earlier misattribution between two different
-  external sources.
+  roadmap (per Note 3670330), a detailed summary of SAP Group Reporting's
+  IFRS 18 capabilities and upcoming reference-content update (Scope Item
+  1SG) per an SAP+PwC Community blog, and an open question raised by a
+  third source (an SAP TRM blog) about whether SAP Treasury and Risk
+  Management is in scope for this landscape and, if so, whether its
+  postings also need IFRS 18 re-categorization — flagged as an
+  unconfirmed potential 8th GAP, not yet added to the Fit-Gap Analysis.
 
 ## Key takeaway
 

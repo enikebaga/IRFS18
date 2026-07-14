@@ -16,6 +16,17 @@ roadmap for supporting it, drawing on three sources:
    feature detail. See the
    [SAP Group Reporting section](#sap-group-reporting-capabilities-for-ifrs-18-sap--pwc-blog)
    below.
+4. An **SAP Community blog on SAP Treasury and Risk Management (TRM)**
+   ("Unlocking the Value of SAP TRM for Corporate Treasury," by
+   mezeshan) — a general TRM tips-and-tricks post; only one of its ~30
+   items (#15) is IFRS 18-specific, but it independently corroborates
+   Note 3670330 and raises a genuine open question for this landscape
+   — see the
+   [Treasury (TRM) angle section](#related-consideration-sap-treasury-and-risk-management-trm)
+   below. The rest of that blog's content (contract processing, market
+   data, RFR/SOFR transition, Fiori roles, etc.) is general TRM
+   knowledge unrelated to this project and is intentionally **not**
+   reproduced here.
 
 This page complements
 [`IFRS18-Fit-Gap-Analysis.md`](IFRS18-Fit-Gap-Analysis.md) (this
@@ -246,6 +257,47 @@ directly parallels what this project's GAP 1 already assumes: no
 automatic SAP fix, full self-service restructuring required (in this
 case, of ZHFM/ZCPL/ZUKV rather than the Group Reporting Consolidation
 CoA).
+
+## Related consideration: SAP Treasury and Risk Management (TRM)
+
+Source: *"Unlocking the Value of SAP TRM for Corporate Treasury,"* SAP
+Community blog by mezeshan. This is a general TRM tips post; item #15
+("IFRS18 – Starting 2027") is its only IFRS 18-specific content, and it:
+
+- Corroborates **Note 3670330** (same note documented in
+  [`OSS-Notes-Guidance.md`](OSS-Notes-Guidance.md)) as the reference for
+  implementing IFRS 18 in SAP.
+- Links to a dedicated, treasury-focused SAP Community blog titled
+  something like *"IFRS 18 compliance for treasury..."*
+  (`community.sap.com/t5/financial-management-blog-posts-by-sap/ifrs-18-compliance-for-treasury-...`)
+  — the URL was truncated in the source shared for this project, so the
+  full content hasn't been reviewed. **Action:** find and read this
+  blog in full if SAP TRM is in scope for this landscape.
+
+**Open question this raises for this project:** the current Fit-Gap
+Analysis (`IFRS18-Fit-Gap-Analysis.md`) does **not** mention SAP TRM
+anywhere, and it isn't known from the material gathered so far whether
+this landscape uses TRM for treasury instruments (loans, deposits, FX
+deals, derivatives, securities). If it does:
+
+- TRM automatically generates cashflow schedules and posts related
+  accounting entries — principal movements, **interest accruals**,
+  repayments, fees, bank charges, and **FX valuation** gains/losses —
+  via closing transactions like `TPM44`, `TPM1`, `TPM18`.
+- Under IFRS 18's IAS 7 changes (see above), **interest paid** must be
+  Financing and **interest received**/**FX gains** may need to sit
+  under Investing — so the G/L accounts TRM posts to must be correctly
+  classified in the restructured FSVs (ZHFM/ZCPL/ZUKV), the same way
+  GAP 7 (IFRS 16 lease accounting) already checks its own dedicated
+  account range.
+- **Recommendation:** confirm with the Finance/Treasury team whether
+  SAP TRM (or an equivalent treasury system) is in use. If so, add a
+  verification step to Phase 1/Phase 3 of the
+  [Project Plan](IFRS18-Project-Plan.md) — similar to Activity 3.4/3.5
+  (the `ZFI_IFRS16` mapping table review) — to confirm TRM's G/L
+  accounts are correctly categorized under the new IFRS 18 structure.
+  This is **not currently a scoped GAP or activity**, since TRM usage
+  hasn't been confirmed for this landscape.
 
 ## How to prepare (general guidance, matches this project's plan)
 

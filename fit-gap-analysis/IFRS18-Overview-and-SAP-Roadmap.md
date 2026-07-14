@@ -1,26 +1,40 @@
 # IFRS 18 Overview & SAP's Roadmap
 
 A plain-language explainer of IFRS 18 and a summary of SAP's stated
-roadmap for supporting it. The general IFRS 18 explanation was first
-captured from an external blog post (Jul 2026); the SAP roadmap section
-has since been **updated with the verified text of SAP Note 3670330**
-(v7, released 06.01.2026) and its three edition-specific companion
-notes, shared directly for this project. See
-[`OSS-Notes-Guidance.md`](OSS-Notes-Guidance.md) for the full note
-details. This page complements
+roadmap for supporting it, drawing on three sources:
+
+1. An initial external blog post (Jul 2026) — general IFRS 18
+   background.
+2. The **verified text of SAP Note 3670330** (v7, released 06.01.2026)
+   and its three edition-specific companion notes — see
+   [`OSS-Notes-Guidance.md`](OSS-Notes-Guidance.md) for full note
+   details.
+3. An **SAP Community blog co-authored by SAP and PwC**
+   ("IFRS 18 and SAP S/4HANA Group Reporting: What It Means and How to
+   Get Ahead," by giulio_peretti, published 2025-11-06) — a credible,
+   named, SAP-affiliated source with concrete SAP Group Reporting
+   feature detail. See the
+   [SAP Group Reporting section](#sap-group-reporting-capabilities-for-ifrs-18-sap--pwc-blog)
+   below.
+
+This page complements
 [`IFRS18-Fit-Gap-Analysis.md`](IFRS18-Fit-Gap-Analysis.md) (this
 landscape's specific GAPs).
 
-> **Correction vs. the original blog summary:** the earlier version of
-> this page (based only on the blog) stated that SAP's solution would be
-> "delivered via the 1SG content package for SAP Group Reporting." The
-> **actual verified text of Note 3670330 does not say this** — it only
-> says SAP is evaluating flexibility in "functional areas, general
-> ledger, [and the] valuation run in General Ledger," without naming a
-> specific content package or committing to Group Reporting as the
-> delivery vehicle. That earlier claim should be treated as inaccurate
-> or outdated blog speculation, not as confirmed SAP guidance. The
-> sections below now reflect the verified note text only.
+> **Note on the "1SG" reference:** an earlier version of this page
+> (based only on source #1, an unattributed blog) claimed SAP's IFRS 18
+> solution would be "delivered via the 1SG content package for SAP
+> Group Reporting," and attributed that claim to Note 3670330. That
+> attribution was **wrong** — the verified text of Note 3670330 does
+> **not** mention "1SG" or Group Reporting at all. However, source #3
+> above (the SAP+PwC blog) independently confirms that **"Scope Item
+> 1SG" is real** — it's SAP Group Reporting's IFRS-compliant reference
+> content package, and it genuinely is being extended/restructured for
+> IFRS 18 (see below). So the underlying fact turned out to be
+> substantially correct, just **misattributed to the wrong note** by
+> the original source. Note 3670330 itself remains scoped to general
+> FI-GL/functional-area/valuation-run flexibility, separate from the
+> Group-Reporting-specific 1SG update described by SAP+PwC.
 
 ## What is IFRS 18 and why does it matter?
 
@@ -66,12 +80,27 @@ must, for each MPM:
 
 - Explain how it's calculated.
 - Explain why it's useful.
-- Provide a **reconciliation to an official IFRS subtotal**.
-- Disclose that reconciliation in the notes, and have it **audited**.
+- Provide a **reconciliation to an official IFRS subtotal** (the most
+  directly comparable one).
+- For **each reconciling item** in that reconciliation, disclose the
+  **income tax effect** and the **effect of non-controlling interest**.
+- Disclose all of the above in **a single dedicated note**, and have it
+  **audited**.
 
 *(This lines up with the "MPM governance" objective in the
 [Demand Charter](../demand-charter/) and the "adjusted performance
 numbers" pain point described there in plain language.)*
+
+## Aggregation and disaggregation (third requirement set)
+
+Beyond the new P&L structure and MPM disclosures, IFRS 18 also gives
+enhanced guidance on **how to group ("aggregate") and split out
+("disaggregate") financial information** based on shared
+characteristics — applying to both the primary statements and the notes.
+This is the principle behind the "similar costs classified differently
+across business units" pain point already captured in the [Demand
+Charter](../demand-charter/), and behind the guidance in GAP 6 (Working
+Capital reporting) about consistent classification.
 
 ## Cash Flow Statement changes (IAS 7)
 
@@ -147,6 +176,77 @@ valuation-run flexibility rather than third-party consolidation
 interfaces — HFM-side alignment will still need to be handled through
 this project's own plan (GAP 3, Phase 5).
 
+## SAP Group Reporting capabilities for IFRS 18 (SAP + PwC blog)
+
+Source: *"IFRS 18 and SAP S/4HANA Group Reporting: What It Means and How
+to Get Ahead"*, SAP Community blog by giulio_peretti, co-authored with
+PwC, published 2025-11-06.
+
+**Applicability disclaimer:** this section describes **SAP Group
+Reporting** functionality. This landscape consolidates through **Oracle
+HFM** via custom Z-programs, not SAP Group Reporting (see GAP 2/GAP 3 in
+the Fit-Gap Analysis), so none of the capabilities below are directly
+usable today. They're captured here as reference/context — useful if a
+future move to SAP Group Reporting is ever evaluated, and because the
+underlying IFRS 18 concepts (parallel versions, restatement, mapping,
+hierarchy maintenance) are conceptually similar to what this project
+already does with HFM (e.g. the XHFM/XCPL/XUKV backups in GAP 1).
+
+### PwC's implementation approach
+
+PwC frames the work in two phases:
+
+1. **Impact assessment** — training (on-site/virtual, eLearning),
+   identifying impacts on reporting, systems (S/4HANA, SAP Group
+   Reporting), processes, and cross-business impacts (e.g. covenants,
+   remuneration tied to reported metrics).
+2. **Implementation** — implementing/testing SAP solutions, updating
+   internal controls, and the iXBRL report.
+
+PwC notes most companies had **not yet started implementation** as of
+the blog's publication (Nov 2025), and — given the need for restated
+comparatives — recommends starting soon given the 2026 comparative
+deadline.
+
+### Current SAP Group Reporting capabilities relevant to IFRS 18
+
+| Capability | What it does |
+|---|---|
+| **Consolidation Extension Versions** | Create derived consolidation versions from a base version for adjustments/restatements without touching the original consolidated results — supports reporting financials under **dual accounting principles from FY2026** (i.e. old + IFRS 18 structure in parallel) |
+| **Consolidation Chart of Accounts (CoA) updates** | Maintain/update the Consolidation CoA to align with the new IFRS 18 disclosure requirements |
+| **Mapping from Operating CoA** | Automates mapping between Operating and Consolidation CoA; integrates with the Group Reporting preparation ledger to define **custom substitution rules** that derive categorized FS items from underlying posting fields |
+| **Time-dependent FS Item Hierarchy Maintenance** | Supports continuous, date-keyed updates to the FS item hierarchy; the **Group Data Analysis** app can restate prior years' data under the updated hierarchy by specifying a key date |
+| **Group Reporting Data Collection** | Structures/manages collection of extra information needed for IFRS 18 (e.g. expense items needed to arrive at Adjusted EBITDA — relevant to MPM disclosure) |
+| **Consolidation Monitor (new version)** | Open/close multiple fiscal periods across multiple consolidation groups in one click via "process year periods" |
+| **Cross Version Balance Validation** | Define cross-version validation rules, including a predefined scenario comparing the Restated Actuals version against Actuals, with configurable validity periods — reconciles the pre- and post-IFRS 18 views |
+
+### Upcoming: Group Reporting Reference Content update (Scope Item 1SG)
+
+SAP's Best-Practice **Group Reporting reference content — Scope Item
+1SG** — includes the Consolidation Chart of Accounts and primary
+statements (Balance Sheet, Income Statement by Nature, Income Statement
+by Function of Expense, Cash Flow Statement (indirect method), Statement
+of Changes in Equity, Statement of Comprehensive Income). Per this blog,
+SAP will update it for IFRS 18 as follows:
+
+- **Extend & restructure the Income Statement** — extend the
+  Consolidation CoA and restructure the Consolidated Income Statement
+  for IFRS 18 presentation.
+- **Update the Cash Flow Statement** — the indirect-method Consolidated
+  Cash Flow Statement's starting point moves to the new **Operating
+  Profit** subtotal.
+
+**Important caveat directly from SAP (via this blog):** these updates go
+into the **standard reference content**, so **new** cloud customers get
+them out-of-the-box — but SAP **will not auto-overwrite** existing
+customers' configurations, since customers often customize the
+pre-delivered FS items/structures. **Existing customers must assess
+their own IFRS 18 impact and implement the changes themselves.** This
+directly parallels what this project's GAP 1 already assumes: no
+automatic SAP fix, full self-service restructuring required (in this
+case, of ZHFM/ZCPL/ZUKV rather than the Group Reporting Consolidation
+CoA).
+
 ## How to prepare (general guidance, matches this project's plan)
 
 - Review current P&L structures — done in GAP 1 / Phase 1-2 of the
@@ -164,3 +264,9 @@ this project's own plan (GAP 3, Phase 5).
 - Engage with SAP through a Customer Engagement Initiative (CEI) or
   Customer Influence Request — recommended in addition to the OSS Note
   search in `OSS-Notes-Guidance.md`.
+- Plan for **dual-principle reporting during the 2026 comparative
+  period** — this project's Phase 2 already preserves the pre-IFRS 18
+  FSVs (XHFM/XCPL/XUKV) as a comparison baseline (GAP 1, Activity 6.7),
+  which serves a similar purpose to SAP Group Reporting's "Consolidation
+  Extension Versions" concept described above, even though the
+  mechanism differs (FSV backup vs. a derived consolidation version).

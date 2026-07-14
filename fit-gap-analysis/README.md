@@ -33,10 +33,14 @@ for demand 288 - IFRS 18.
   note numbers are fabricated by us.
 - [`IFRS18-Overview-and-SAP-Roadmap.md`](IFRS18-Overview-and-SAP-Roadmap.md)
   — a plain-language explainer of IFRS 18 (new P&L categories, required
-  subtotals, MPM rules, IAS 7 cash-flow reclassification) and SAP's
-  confirmed roadmap for supporting it (per Note 3670330), including a
-  correction of an earlier inaccurate claim from a blog source, and notes
-  on how it relates to this specific (HFM-based) landscape.
+  subtotals, MPM rules incl. tax/NCI reconciliation detail, aggregation/
+  disaggregation, IAS 7 cash-flow reclassification), SAP's confirmed
+  roadmap (per Note 3670330), and a detailed summary of SAP Group
+  Reporting's IFRS 18 capabilities and upcoming reference-content update
+  (Scope Item 1SG) per an SAP+PwC Community blog — including notes on how
+  each piece relates (or doesn't) to this specific (HFM-based) landscape,
+  and a correction of an earlier misattribution between two different
+  external sources.
 
 ## Key takeaway
 

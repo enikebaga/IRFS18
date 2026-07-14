@@ -26,10 +26,17 @@ for demand 288 - IFRS 18.
   `openpyxl` script used to generate the workbook, so it can be
   regenerated/edited programmatically.
 - [`OSS-Notes-Guidance.md`](OSS-Notes-Guidance.md) — guidance on how to
-  search the SAP Support Portal for IFRS 18-relevant OSS Notes. No note
-  numbers are fabricated here — SAP Notes require access to the SAP
-  Support Portal (SAP for Me), which was not available when this analysis
-  was produced.
+  search the SAP Support Portal for IFRS 18-relevant OSS Notes, plus one
+  note (3670330) reported by an external source that still needs
+  verification on the Support Portal. No note numbers are fabricated by
+  us — SAP Notes require access to the SAP Support Portal (SAP for Me),
+  which was not available when this analysis was produced.
+- [`IFRS18-Overview-and-SAP-Roadmap.md`](IFRS18-Overview-and-SAP-Roadmap.md)
+  — a plain-language explainer of IFRS 18 (new P&L categories, required
+  subtotals, MPM rules, IAS 7 cash-flow reclassification) and a summary
+  of SAP's stated roadmap for supporting it across S/4HANA editions,
+  captured from an external source, with notes on how it relates to this
+  specific (HFM-based) landscape.
 
 ## Key takeaway
 

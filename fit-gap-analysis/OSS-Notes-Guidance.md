@@ -1,11 +1,29 @@
 # IFRS 18 — SAP OSS Notes Guidance
 
-**No specific SAP OSS Note numbers are listed in this document.** OSS
-Notes are published exclusively on the SAP Support Portal (SAP for Me /
-SAP ONE Support Launchpad), which requires an S-user login and was not
-accessible when this analysis was produced. Fabricating note numbers
-would be actively harmful, so this document instead gives your team a
-concrete, actionable search plan.
+**This document does not fabricate SAP OSS Note numbers.** OSS Notes are
+published exclusively on the SAP Support Portal (SAP for Me / SAP ONE
+Support Launchpad), which requires an S-user login and was not directly
+accessible when this analysis was produced. The one note number below
+(3670330) was reported by a third-party blog shared for this project,
+**not independently confirmed on the Support Portal** — treat it as a
+lead to verify, not a confirmed fact, and use the search plan below to
+find anything further.
+
+## Note reported by external source (needs verification)
+
+| Note | Title (as reported) | Reported scope | Status |
+|---|---|---|---|
+| [**3670330**](https://me.sap.com/notes/3670330) | SAP's IFRS 18 solution approach | Targeted a formal solution approach by Dec 2025, delivered via the **1SG content package** for **SAP Group Reporting** | **Not yet verified by us** — pull up directly on the Support Portal to confirm content, validity, and whether it's actually applicable to this landscape |
+
+See [`IFRS18-Overview-and-SAP-Roadmap.md`](IFRS18-Overview-and-SAP-Roadmap.md)
+for full context on where this note came from. Important caveat: this
+landscape consolidates via **Oracle HFM**, not **SAP Group Reporting**,
+so the 1SG content package referenced by this note may only partially
+apply here (e.g. general FI-GL/FSV guidance might be relevant to GAP 1,
+but Group-Reporting-specific content would not resolve GAP 2/GAP 3).
+Since the targeted delivery date (Dec 2025) has already passed as of
+this writing, whoever reviews the note should also check for any
+successor/related notes it references.
 
 ## Why IFRS 18 may have limited dedicated OSS Note coverage
 
@@ -74,8 +92,12 @@ Also filter by:
 
 ## Recommended action
 
-Assign someone with SAP Support Portal access (S-user) to run the
-searches above and document any relevant notes found, including:
+1. **First**, have someone with SAP Support Portal access (S-user) pull
+   up **Note 3670330** directly at <https://me.sap.com/notes/3670330> to
+   confirm it exists, read its actual content/validity, and check for any
+   notes it references or that reference it back.
+2. **Then**, run the broader searches below and document any additional
+   relevant notes found, including:
 
 - Note number, title, and release date
 - Application component and validity (software component/release)

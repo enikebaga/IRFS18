@@ -330,6 +330,8 @@ table above if activities must be done one at a time by a single team.
 | FG/FX filtering required for P&L report | Adds CDS view extension development (2 extra PD) | Business decision in Phase 4 activity 4.1; effort already included as optional |
 | ZHFM hierarchy node IDs change more extensively than expected | More CDS view updates needed in working capital report | Detailed node mapping in Phase 1 activity 1.2 identifies all affected nodes upfront |
 | Transport conflicts in CSQ/CSP | Delays go-live | Dedicated transport request preparation; coordinate with other project teams |
+| IFRS 18 also updates IAS 7 — dividends paid move to Investing, interest paid to Financing, interest received to Investing, removing the old classification choice | Existing cash-flow statement reports/CDS views built on the old flexible classification may need updates; not currently scoped as its own GAP | Add an explicit cash-flow classification check to Phase 2 unit testing (Activity 2.4); see [`IFRS18-Overview-and-SAP-Roadmap.md`](IFRS18-Overview-and-SAP-Roadmap.md) |
+| SAP's own IFRS 18 solution approach (reportedly SAP Note 3670330, targeted Dec 2025, delivered via the 1SG content package for SAP Group Reporting) may not directly cover this HFM-based landscape, and hasn't yet been verified on the Support Portal | Could mean less pre-built SAP support than expected for GAP 1, or newly relevant guidance not yet reflected in this plan | Verify Note 3670330 directly on the SAP Support Portal early in Phase 1; see [`OSS-Notes-Guidance.md`](OSS-Notes-Guidance.md) |
 
 ### Assumptions
 

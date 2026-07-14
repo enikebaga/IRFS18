@@ -8,8 +8,10 @@ Usage:
     python3 generate_project_plan_xlsx.py
 
 Sheets produced:
-    1. Project Plan       - 44 activities across 8 phases, with dates,
-                             dependencies, and a Status column for tracking.
+    1. Project Plan       - 51 activities across 8 phases, with dates,
+                             dependencies, execution order, SAP
+                             transaction(s)/object(s), and a Status
+                             column for tracking.
     2. Effort Summary      - effort by phase / by role / by GAP / by work type.
     3. Milestones & Risks  - key milestones, risks, assumptions, critical path.
     4. RACI Matrix         - responsibility assignment across 9 roles.
@@ -169,8 +171,78 @@ activities = [
     ("8.4", "8 - Production Go-Live", "Hypercare support (2 weeks - monitor HFM extraction, reports, IFRS 16 postings)", "All", "FC + Dev", 5, 90, 14, "8.2"),
 ]
 
+# Recommended Execution Order (see IFRS18-Project-Plan.md, "Recommended
+# Execution Sequence") - activities sharing the same number have no
+# dependency on each other and can be executed in parallel.
+EXEC_ORDER = {
+    "1.1": 1, "1.2": 2, "1.3": 3, "1.4": 3, "1.5": 3, "1.6": 3,
+    "2.1": 4, "2.2": 5, "2.3": 5, "2.4": 6, "2.5": 7,
+    "3.1": 8, "3.2": 9, "3.3": 10, "3.4": 8, "3.5": 10, "3.6": 8, "3.7": 10,
+    "4.1": 8, "4.2": 9, "4.3": 9, "4.4": 8, "4.5": 10, "4.6": 10, "4.7": 11, "4.8": 11,
+    "5.1": 11, "5.2": 12, "5.3": 11, "5.4": 12, "5.5": 13, "5.6": 13, "5.7": 13,
+    "6.1": 14, "6.2": 15, "6.3": 15, "6.4": 15, "6.5": 15, "6.6": 15, "6.7": 16, "6.8": 17,
+    "7.1": 18, "7.2": 19, "7.3": 20, "7.4": 21, "7.5": 22, "7.6": 23,
+    "8.1": 24, "8.2": 25, "8.3": 25, "8.4": 26,
+}
+
+# SAP transaction code(s) / development object(s) touched by each activity.
+TRANSACTION_OBJECT = {
+    "1.1": "Workshop - no transaction; output is a signed-off category definition document",
+    "1.2": "Design doc for later use in OB58 (Financial Statement Version: Maintain)",
+    "1.3": "Design doc for later use in SM30 on table /FIT/FI_F_STRUCT",
+    "1.4": "Meeting - no transaction",
+    "1.5": "Meeting - no transaction",
+    "1.6": "Meeting - no transaction",
+    "2.1": "OB58 (FSV = ZHFM, chart of accounts ZFRE)",
+    "2.2": "OB58 (FSV = ZCPL)",
+    "2.3": "OB58 (FSV = ZUKV)",
+    "2.4": "F.01 / RFBILA00 (or S_ALR_87012284), one run per FSV",
+    "2.5": "Review of OB58 output; meeting sign-off",
+    "3.1": "SM30 on table /FIT/FI_F_STRUCT (new position codes, 21xxxx range)",
+    "3.2": "ZHFMB0 (program /FIT/FI_D_HFM_BIL_ZUORD_001); FSV=ZHFM, principle=GRUP, COA=ZFRE, delete flag=X",
+    "3.3": "SE16N (display table /FIT/FI_F_HKONT)",
+    "3.4": "ZFI_IFRS16_MAPPING / SM30 on table ZFI_IFRS16",
+    "3.5": "ZFI_IFRS16_MAPPING / SM30 on table ZFI_IFRS16 (field HKONT / TAGETIC_ACCOUNT)",
+    "3.6": "/UI2/FLPD_CUST (Fiori Launchpad Designer) - activate F0708, W0161",
+    "3.7": "F0708 / W0161 app configuration - bind default FSV parameters",
+    "4.1": "Business decision workshop - no transaction",
+    "4.2": "Custom Analytical Queries app (Fiori) on CDS view I_JournalEntryItemCube",
+    "4.3": "ADT/Eclipse - DDLS extend view on I_JournalEntryItemCube; SE09/SE10 transport",
+    "4.4": "ADT/Eclipse - CDS view ZI_GLAcctBalanceCube source; SE09/SE10 transport",
+    "4.5": "ADT/Eclipse or RSRT - query ZC_WORKINGCAPITAL_Q001 filter binding",
+    "4.6": "SAP Analytics Cloud review - no ABAP transaction",
+    "4.7": "Run new query + ZC_PROFITANDLOSS_UKV via Fiori / Analysis for Office",
+    "4.8": "Run working-capital report (Fiori app on ZC_WORKINGCAPITAL_Q001)",
+    "5.1": "ZHFM01 (program /FIT/FI_D_HFM_INTF_001); parameter PX_SIMUL = 'X'",
+    "5.2": "ZHFM10 (program /FIT/FI_D_HFM_INTF_010); AL11 / app server output review",
+    "5.3": "SM30 on tables /FIT/FI_F_KONSM and /FIT/FI_F_RMVCT",
+    "5.4": "ZFI_RFBILA00_DOWN (AMANA path); SE37 test of ZFI_AMANA_PROXY; SLG1 logs",
+    "5.5": "External system (Oracle HFM) - no SAP transaction",
+    "5.6": "External system (Tagetik) - no SAP transaction",
+    "5.7": "External system (AMANA DMS) - no SAP transaction",
+    "6.1": "Full chain: ZHFMB0 -> ZHFM01 -> ZHFM10; review final output file",
+    "6.2": "Custom analytical query from 4.2 via Fiori / Analysis for Office",
+    "6.3": "Working-capital report (ZC_WORKINGCAPITAL_Q001)",
+    "6.4": "Z_FI_I_LOAD_IFRS16 test run; F.01 / RFBILA00 classification check",
+    "6.5": "Full run of ZFI_RFBILA00_DOWN with AMANA export option",
+    "6.6": "Run existing shareholder reports unchanged",
+    "6.7": "OB58 (compare XHFM/XCPL/XUKV vs. ZHFM/ZCPL/ZUKV) + F.01 comparison",
+    "6.8": "Fixes applied to the specific transaction/object where the defect was found",
+    "7.1": "SE09 / SE10 (Transport Organizer) - customizing + workbench requests",
+    "7.2": "STMS (Transport Management System) - CSD to CSQ",
+    "7.3": "OB58, ZHFMB0, ZHFM01, ZHFM10, F0708/W0161, custom query, Z_FI_I_LOAD_IFRS16, ZFI_RFBILA00_DOWN",
+    "7.4": "Business users execute Fiori apps/reports listed in 7.3, in CSQ",
+    "7.5": "Fixes in source object + SE09/SE10/STMS re-transport",
+    "7.6": "Same transactions as 7.3",
+    "8.1": "STMS - CSQ to CSP",
+    "8.2": "Same transactions as 7.3, executed in CSP",
+    "8.3": "Email/meeting - no transaction",
+    "8.4": "SM37 (monitor jobs for ZHFM01/ZHFM10/Z_FI_I_LOAD_IFRS16), SLG1, ST22",
+}
+
 headers1 = [
-    "Activity ID", "Phase", "Description", "GAP Ref", "GAP Name", "Gap Type",
+    "Activity ID", "Exec. Order", "Phase", "Description",
+    "SAP Transaction(s) / Object(s)", "GAP Ref", "GAP Name", "Gap Type",
     "Role", "Effort (PD)", "Start Date", "End Date", "Duration (days)",
     "Dependencies", "Status",
 ]
@@ -187,20 +259,22 @@ for act_id, phase, desc, gap_ref, role, effort, start_off, dur, dep in activitie
     start = d(start_off)
     end = start + timedelta(days=dur - 1)
     rows1.append([
-        act_id, phase, desc, gap_ref, GAP_NAMES.get(gap_ref, gap_ref),
+        act_id, EXEC_ORDER.get(act_id, "-"), phase, desc,
+        TRANSACTION_OBJECT.get(act_id, "-"), gap_ref,
+        GAP_NAMES.get(gap_ref, gap_ref),
         GAP_TYPE_BY_REF.get(gap_ref, "-"), role, effort,
         start, end, dur, dep or "-", "Not Started",
     ])
 
 next_row = write_table(
     ws1, 1, headers1, rows1,
-    widths=[10, 26, 60, 9, 34, 16, 16, 11, 12, 12, 14, 12, 14],
+    widths=[10, 9, 26, 55, 45, 9, 34, 16, 16, 11, 12, 12, 14, 12, 14],
 )
 for r in range(2, next_row):
-    ws1.cell(row=r, column=9).number_format = "yyyy-mm-dd"
-    ws1.cell(row=r, column=10).number_format = "yyyy-mm-dd"
+    ws1.cell(row=r, column=11).number_format = "yyyy-mm-dd"
+    ws1.cell(row=r, column=12).number_format = "yyyy-mm-dd"
 
-status_col = "M"
+status_col = "O"
 dv = DataValidation(
     type="list",
     formula1='"Not Started,In Progress,Blocked,Complete"',
@@ -210,10 +284,10 @@ ws1.add_data_validation(dv)
 dv.add(f"{status_col}2:{status_col}{next_row - 1}")
 
 total_effort_row = next_row + 1
-ws1.cell(row=total_effort_row, column=7, value="Total").font = Font(bold=True)
-ws1.cell(row=total_effort_row, column=8, value=f"=SUM(H2:H{next_row - 1})").font = Font(bold=True)
+ws1.cell(row=total_effort_row, column=9, value="Total").font = Font(bold=True)
+ws1.cell(row=total_effort_row, column=10, value=f"=SUM(J2:J{next_row - 1})").font = Font(bold=True)
 
-ws1.freeze_panes = "A2"
+ws1.freeze_panes = "C2"
 
 # ============================================================
 # Sheet 2 — Effort Summary

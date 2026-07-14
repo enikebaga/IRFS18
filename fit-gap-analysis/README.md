@@ -11,14 +11,17 @@ for demand 288 - IFRS 18.
   functional design specification and solution description for all 7
   identified GAPs (SAP FI/CO/Consolidation scope), with dependencies and
   effort/type summary tables.
-- [`IFRS18-Project-Plan.md`](IFRS18-Project-Plan.md) — the 8-phase, 44-activity
-  project plan derived from the GAPs: Gantt chart, detailed activity
-  breakdown, effort summary (by phase/role/GAP/work type), milestones,
-  risks & assumptions.
+- [`IFRS18-Project-Plan.md`](IFRS18-Project-Plan.md) — the 8-phase,
+  51-activity project plan derived from the GAPs: Gantt chart, a
+  recommended execution sequence (respecting dependencies), a detailed
+  activity breakdown listing the exact SAP transaction(s)/development
+  object(s) each activity touches, effort summary (by phase/role/GAP/work
+  type), milestones, risks & assumptions.
 - [`IFRS18_Adoption_Project_Plan.xlsx`](IFRS18_Adoption_Project_Plan.xlsx) —
   the same project plan as an editable Excel workbook (4 sheets: Project
-  Plan, Effort Summary, Milestones & Risks, RACI Matrix), for tracking and
-  resource assignment.
+  Plan — including Execution Order and SAP Transaction(s)/Object(s)
+  columns — Effort Summary, Milestones & Risks, RACI Matrix), for tracking
+  and resource assignment.
 - [`generate_project_plan_xlsx.py`](generate_project_plan_xlsx.py) — the
   `openpyxl` script used to generate the workbook, so it can be
   regenerated/edited programmatically.

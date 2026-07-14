@@ -64,6 +64,17 @@ for demand 288 - IFRS 18.
   capabilities and upcoming reference-content update (Scope Item 1SG)
   per an SAP+PwC Community blog, and the SAP TRM open question (now
   addressed with dedicated verification activities in the Project Plan).
+- [`IFRS18-Transformation-Methodology.md`](IFRS18-Transformation-Methodology.md)
+  — SAP's own recommended 5-phase transformation methodology (Discover →
+  Prepare → Explore → Realize → Deploy & Run), from a Product and Topic
+  Expert-authored SAP Community blog, mapped onto this plan's 8 phases;
+  detailed guidance on Cost of Sales Accounting activation, functional
+  area derivation, FSV/Cash Flow Statement delivery (incl. **Scope Item
+  1GA**, a distinct deliverable from Scope Item 1SG), and — most
+  actionably — a **concrete FX gain/loss categorization rule** (by
+  underlying item nature: trade receivables/payables → Operating, cash &
+  equivalents → Investing, bonds/borrowings → Financing) that directly
+  refines GAP 5's FG/FX exclusion question in the Fit-Gap Analysis.
 
 ## Key takeaway
 

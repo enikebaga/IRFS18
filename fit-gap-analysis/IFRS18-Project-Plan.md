@@ -7,7 +7,11 @@ effort, and timeline. Target: production readiness before **January 1,
 before the effective date.
 
 See [`IFRS18-Fit-Gap-Analysis.md`](IFRS18-Fit-Gap-Analysis.md) for the
-underlying GAP definitions this plan implements, and
+underlying GAP definitions this plan implements,
+[`IFRS18-Transformation-Methodology.md`](IFRS18-Transformation-Methodology.md)
+for SAP's own recommended transformation methodology (Discover → Prepare
+→ Explore → Realize → Deploy & Run) and how it maps onto this plan's 8
+phases, and
 [`IFRS18_Adoption_Project_Plan.xlsx`](IFRS18_Adoption_Project_Plan.xlsx)
 for the editable/trackable version of this plan (now including the same
 Execution Order and SAP Transaction/Object columns described below).
@@ -385,6 +389,8 @@ material behind this update.)*
 | HFM-side changes delayed (external team dependency) | Blocks end-to-end validation of consolidation interface | Early kick-off in Phase 1; parallel workstream with HFM team starting Aug 18 |
 | Tagetik introduces new account codes for IFRS 18 | Additional mapping table entries needed in ZFI_IFRS16 | Coordinate with Tagetik team in Phase 1; buffer in Phase 3 |
 | FG/FX filtering required for P&L report | Adds CDS view extension development (2 extra PD) | Business decision in Phase 4 activity 4.1; effort already included as optional |
+| FX gains/losses may need bifurcation by underlying item nature (trade receivables/payables → Operating, cash & equivalents → Investing, bonds/borrowings → Financing) per SAP's own transformation guidance — not currently a scoped activity | Could require splitting existing G/L accounts and reassessing FX valuation config (Classic `OB09`/`KDF` or Advanced FCV semantic tags) beyond what GAP 1/GAP 5 currently assume | Raise with business/auditor during Activity 4.1 and Activity 1.2 (FSV design); see [`IFRS18-Transformation-Methodology.md`](IFRS18-Transformation-Methodology.md#3-foreign-exchange-gainloss-treatment--concrete-categorization-rule) |
+| SAP references two distinct scope items (1SG for Group Reporting, 1GA for core SAP Cloud ERP/Private reference content) — neither independently verified on the Support Portal / Best Practices Explorer | Could lead to looking at the wrong reference content package when checking SAP's sample FSVs | Verify both scope item numbers directly before relying on either; see `OSS-Notes-Guidance.md` |
 | ZHFM hierarchy node IDs change more extensively than expected | More CDS view updates needed in working capital report | Detailed node mapping in Phase 1 activity 1.2 identifies all affected nodes upfront |
 | Transport conflicts in CSQ/CSP | Delays go-live | Dedicated transport request preparation; coordinate with other project teams |
 | IFRS 18 also updates IAS 7 — dividends paid move to Investing, interest paid to Financing, interest received to Investing, removing the old classification choice | Existing cash-flow statement reports/CDS views built on the old flexible classification may need updates; not currently scoped as its own GAP | Add an explicit cash-flow classification check to Phase 2 unit testing (Activity 2.4); see [`IFRS18-Overview-and-SAP-Roadmap.md`](IFRS18-Overview-and-SAP-Roadmap.md) |

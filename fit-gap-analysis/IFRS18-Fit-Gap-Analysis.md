@@ -342,6 +342,28 @@ decision on FG/FX exclusion logic.
 extension needed: developer effort for CDS view extension (Clean Core
 Level B).
 
+> **Update (Jul 14, 2026) — reconsider the FG/FX exclusion approach.**
+> SAP's own IFRS 18 transformation guidance (see
+> [`IFRS18-Transformation-Methodology.md`](IFRS18-Transformation-Methodology.md#3-foreign-exchange-gainloss-treatment--concrete-categorization-rule))
+> specifies that FX gains/losses must be split by the **nature of the
+> underlying item**, not excluded/filtered as a single "FX" bucket:
+>
+> | Source of FX Gain/Loss | IFRS 18 Category |
+> |---|---|
+> | Trade Receivables / Payables | Operating |
+> | Cash and Cash Equivalents | Investing |
+> | Issued Bonds, Borrowings | Financing |
+>
+> This suggests the standard-compliant fix is **not** a blanket FG/FX
+> document-type exclusion (as the legacy custom cube does today), but
+> **bifurcating the underlying G/L accounts** by the nature of the item
+> causing the FX, so each account already lands in the correct IFRS 18
+> category via the GAP 1 FSV restructuring — removing the need for a
+> separate FX filter/exclusion at the reporting layer at all. Raise this
+> with the business/auditor during Activity 4.1 (the FG/FX business
+> decision) before committing to either the "keep the exclusion" or
+> "build a CDS extension" path described above.
+
 ---
 
 ## GAP 6 — Working Capital Balance Sheet Reporting

@@ -58,6 +58,21 @@ above) → **3696338** (most relevant edition-specific advisory) → 3694359
 and 3700153 only if parts of the landscape turn out to be on those
 editions.
 
+**Independent cross-confirmation (Jul 14, 2026):** a second, separate
+SAP-authored Community blog ("Transformation Journey with IFRS 18" by
+sanilbhandari, SAP Product and Topic Expert, 2026-05-25 — see
+[`IFRS18-Transformation-Methodology.md`](IFRS18-Transformation-Methodology.md))
+independently confirms that **3696338** and **3694359** are the notes
+under which SAP will deliver a **sample Financial Statement Version**
+for IFRS 18. This raises confidence these are the right two notes to
+watch for FSV template content specifically (on top of their general
+advisory content), not just general transition guidance. The same blog
+also mentions **Scope Item 1GA** (SAP Cloud ERP / Private Edition
+reference content) as a separate deliverable from **Scope Item 1SG**
+(SAP Group Reporting reference content, per the earlier giulio_peretti
+blog) — these appear to be two distinct scope items, not the same one
+under two names; both should be verified independently.
+
 ## Why IFRS 18 has comparatively light *code-correction* coverage
 
 Unlike standards that change *how transactions are posted* (e.g. IFRS 16

@@ -8,13 +8,20 @@ Usage:
     python3 generate_project_plan_xlsx.py
 
 Sheets produced:
-    1. Project Plan       - 51 activities across 8 phases, with dates,
+    1. Project Plan       - 60 activities across 8 phases, with dates,
                              dependencies, execution order, SAP
                              transaction(s)/object(s), and a Status
-                             column for tracking.
+                             column for tracking. Includes 9 activities
+                             (1.7-1.11, 3.8-3.9, 5.8-5.9) added after
+                             reviewing SAP Note 3670330 and the SAP TRM
+                             open question.
     2. Effort Summary      - effort by phase / by role / by GAP / by work type.
     3. Milestones & Risks  - key milestones, risks, assumptions, critical path.
-    4. RACI Matrix         - responsibility assignment across 9 roles.
+    4. RACI Matrix         - responsibility assignment across roles.
+    5. SAP Notes & References - confirmed SAP Notes, child-note search
+                             guide, SAP content deliverables tracker,
+                             external source references, and a treasury
+                             G/L account classification checklist.
 """
 
 from datetime import date, timedelta
@@ -108,6 +115,7 @@ GAP_NAMES = {
     "1->4": "GAP 1 -> GAP 4",
     "2, 3": "GAP 2, GAP 3",
     "-": "N/A",
+    "SAPNOTE": "SAP Notes & Treasury (added after reviewing Note 3670330 and the TRM open question)",
 }
 
 activities = [
@@ -117,6 +125,11 @@ activities = [
     ("1.4", "1 - Design & Preparation", "Kick-off coordination with HFM team (new structure positions, receiving format)", "3", "FC + HFM", 1, 7, 3, None),
     ("1.5", "1 - Design & Preparation", "Kick-off coordination with Tagetik team (account code alignment)", "7", "FC + Tagetik", 1, 7, 3, None),
     ("1.6", "1 - Design & Preparation", "Kick-off coordination with AMANA team (new category handling)", "4", "FC + AMANA", 0.5, 7, 3, None),
+    ("1.7", "1 - Design & Preparation", "Review and implement SAP Note 3670330 - check validity for current release, review all child notes (3694359, 3696338, 3700153), implement corrections via SNOTE", "SAPNOTE", "Basis + FC", 2, 0, 4, None),
+    ("1.8", "1 - Design & Preparation", "Review SAP IFRS 18 webinar recordings (Feb/Mar 2026) for technical guidance", "SAPNOTE", "FC", 1, 0, 2, None),
+    ("1.9", "1 - Design & Preparation", "Review treasury compliance blog and check for TRM-specific notes", "SAPNOTE", "FC", 0.5, 0, 2, None),
+    ("1.10", "1 - Design & Preparation", "Review treasury G/L accounts for IFRS 18 classification (interest, FX, dividends, fair value)", "SAPNOTE", "FC + Treasury", 2, 3, 5, "1.1"),
+    ("1.11", "1 - Design & Preparation", "Use 1SG content package restructured Income Statement as reference blueprint for FSV design", "SAPNOTE", "FC", 1, 0, 3, None),
 
     ("2.1", "2 - FSV Restructuring", "Restructure ZHFM via OB58: add Operating/Investing/Financing nodes, two subtotal nodes, reassign P&L G/L accounts", "1", "FC", 5, 14, 7, "1.2"),
     ("2.2", "2 - FSV Restructuring", "Restructure ZCPL via OB58: apply IFRS 18 structure for controlling P&L", "1", "FC", 3, 21, 5, "2.1"),
@@ -131,6 +144,8 @@ activities = [
     ("3.5", "3 - Configuration Updates", "Update ZFI_IFRS16 entries if chart of accounts changes or Tagetik introduces new codes", "7", "FC", 1, 37, 3, "3.4"),
     ("3.6", "3 - Configuration Updates", "Activate Fiori apps F0708 and W0161 in Fiori Launchpad", "4", "Basis/FC", 1, 32, 3, "2.5"),
     ("3.7", "3 - Configuration Updates", "Configure Fiori apps for IFRS FSVs (ZHFM, ZCPL, ZUKV)", "4", "FC", 1, 35, 2, "3.6"),
+    ("3.8", "3 - Configuration Updates", "Apply SAP Note 3670330 child notes / corrections to CSD via SNOTE", "SAPNOTE", "Basis", 1, 32, 2, "1.7"),
+    ("3.9", "3 - Configuration Updates", "Verify new semantic tags for Operating Profit and Profit before Financing and Income Tax", "SAPNOTE", "FC", 1, 32, 2, "1.7"),
 
     ("4.1", "4 - Development", "Evaluate whether FG/FX document type exclusion is still a business requirement", "5", "FC + Dev", 1, 32, 2, "2.5"),
     ("4.2", "4 - Development", "Create custom analytical query on I_JournalEntryItemCube via Custom Analytical Queries app (P&L filter + functional area classification)", "5", "FC/Dev", 3, 34, 5, "4.1"),
@@ -148,6 +163,8 @@ activities = [
     ("5.5", "5 - Interface Validation", "Coordinate HFM-side configuration updates (new accounts/categories in HFM)", "3", "HFM team", 3, 35, 20, "1.4"),
     ("5.6", "5 - Interface Validation", "Coordinate Tagetik account code alignment", "7", "Tagetik team", 2, 35, 20, "1.5"),
     ("5.7", "5 - Interface Validation", "Coordinate AMANA receiving system updates", "4", "AMANA team", 1, 35, 20, "1.6"),
+    ("5.8", "5 - Interface Validation", "Validate Cash Flow Statement CDS view after note implementation", "SAPNOTE", "FC", 0.5, 47, 2, "3.8"),
+    ("5.9", "5 - Interface Validation", "Validate treasury valuation postings in restructured FSVs", "SAPNOTE", "FC + Treasury", 1, 43, 4, "1.10"),
 
     ("6.1", "6 - Integration Testing", "End-to-end: FSV -> mapping regeneration -> HFM extraction -> file validation", "1->2->3", "FC", 3, 51, 5, "5.2"),
     ("6.2", "6 - Integration Testing", "End-to-end: FSV -> P&L report with IFRS 18 categories and subtotals", "1->5", "FC", 1, 53, 3, "4.7"),
@@ -176,10 +193,13 @@ activities = [
 # dependency on each other and can be executed in parallel.
 EXEC_ORDER = {
     "1.1": 1, "1.2": 2, "1.3": 3, "1.4": 3, "1.5": 3, "1.6": 3,
+    "1.7": 1, "1.8": 1, "1.9": 1, "1.10": 3, "1.11": 1,
     "2.1": 4, "2.2": 5, "2.3": 5, "2.4": 6, "2.5": 7,
     "3.1": 8, "3.2": 9, "3.3": 10, "3.4": 8, "3.5": 10, "3.6": 8, "3.7": 10,
+    "3.8": 8, "3.9": 8,
     "4.1": 8, "4.2": 9, "4.3": 9, "4.4": 8, "4.5": 10, "4.6": 10, "4.7": 11, "4.8": 11,
     "5.1": 11, "5.2": 12, "5.3": 11, "5.4": 12, "5.5": 13, "5.6": 13, "5.7": 13,
+    "5.8": 12, "5.9": 11,
     "6.1": 14, "6.2": 15, "6.3": 15, "6.4": 15, "6.5": 15, "6.6": 15, "6.7": 16, "6.8": 17,
     "7.1": 18, "7.2": 19, "7.3": 20, "7.4": 21, "7.5": 22, "7.6": 23,
     "8.1": 24, "8.2": 25, "8.3": 25, "8.4": 26,
@@ -193,6 +213,11 @@ TRANSACTION_OBJECT = {
     "1.4": "Meeting - no transaction",
     "1.5": "Meeting - no transaction",
     "1.6": "Meeting - no transaction",
+    "1.7": "SNOTE (Note Implementation) for Note 3670330 and its child notes",
+    "1.8": "External webinar review - no transaction",
+    "1.9": "External blog / Support Portal search - no transaction",
+    "1.10": "SM30 / SE16N on TRM accounting-derivation config (Account Assignment Reference) and affected G/L accounts",
+    "1.11": "Review of SAP Best Practice content (Scope Item 1SG) - reference only, no transaction in this landscape",
     "2.1": "OB58 (FSV = ZHFM, chart of accounts ZFRE)",
     "2.2": "OB58 (FSV = ZCPL)",
     "2.3": "OB58 (FSV = ZUKV)",
@@ -205,6 +230,8 @@ TRANSACTION_OBJECT = {
     "3.5": "ZFI_IFRS16_MAPPING / SM30 on table ZFI_IFRS16 (field HKONT / TAGETIC_ACCOUNT)",
     "3.6": "/UI2/FLPD_CUST (Fiori Launchpad Designer) - activate F0708, W0161",
     "3.7": "F0708 / W0161 app configuration - bind default FSV parameters",
+    "3.8": "SNOTE (Note Implementation)",
+    "3.9": "OB58 hierarchy node semantic-tag assignment; KPI framework config",
     "4.1": "Business decision workshop - no transaction",
     "4.2": "Custom Analytical Queries app (Fiori) on CDS view I_JournalEntryItemCube",
     "4.3": "ADT/Eclipse - DDLS extend view on I_JournalEntryItemCube; SE09/SE10 transport",
@@ -220,6 +247,8 @@ TRANSACTION_OBJECT = {
     "5.5": "External system (Oracle HFM) - no SAP transaction",
     "5.6": "External system (Tagetik) - no SAP transaction",
     "5.7": "External system (AMANA DMS) - no SAP transaction",
+    "5.8": "CDS view 2CCFICSHFLINDIFRS (Cash Flow Statement - Indirect Method for IFRS); test via report/app",
+    "5.9": "Run TPM44/TPM1/TPM18 closing postings, then F.01/RFBILA00 to verify classification",
     "6.1": "Full chain: ZHFMB0 -> ZHFM01 -> ZHFM10; review final output file",
     "6.2": "Custom analytical query from 4.2 via Fiori / Analysis for Office",
     "6.3": "Working-capital report (ZC_WORKINGCAPITAL_Q001)",
@@ -251,7 +280,7 @@ GAP_TYPE_BY_REF = {
     "1": "CONFIG", "2": "CONFIG", "3": "INTERFACE, CONFIG", "4": "INTERFACE",
     "5": "REPORT", "6": "ENHANCEMENT", "7": "CONFIG", "All": "-",
     "1->2->3": "-", "1->5": "-", "1->6": "-", "1->7": "-", "1->4": "-",
-    "2, 3": "-", "-": "-",
+    "2, 3": "-", "-": "-", "SAPNOTE": "CONFIG + ADVISORY",
 }
 
 rows1 = []
@@ -295,29 +324,30 @@ ws1.freeze_panes = "C2"
 ws2 = wb.create_sheet("Effort Summary")
 
 by_phase = [
-    ("1. Design & Preparation", "2 weeks", 13.5),
+    ("1. Design & Preparation", "2 weeks", 20.0),
     ("2. FSV Restructuring", "3 weeks", 14.0),
-    ("3. Configuration Updates", "2 weeks", 10.5),
+    ("3. Configuration Updates", "2 weeks", 12.5),
     ("4. Development", "3 weeks", 11.0),
-    ("5. Interface Validation", "3 weeks", 11.0),
+    ("5. Interface Validation", "3 weeks", 12.5),
     ("6. Integration Testing", "3.5 weeks", 12.5),
     ("7. QA Transport & UAT", "4 weeks", 14.5),
     ("8. Production Go-Live", "4 weeks", 8.0),
-    ("Total", "~22 weeks", 95.0),
+    ("Total", "~22 weeks", 105.0),
 ]
 r = write_table(
     ws2, 1, ["Phase", "Calendar Duration", "Effort (PD)"], by_phase,
-    widths=[32, 20, 14], banner="Effort by Phase",
+    widths=[32, 20, 14], banner="Effort by Phase (updated Jul 14, 2026 - was 95 PD; +10 PD for SAP Note / Treasury activities)",
 )
 
 by_role = [
-    ("FI/CO Functional Consultant", 65, "68%"),
-    ("ABAP Developer", 12, "13%"),
+    ("FI/CO Functional Consultant", 71.5, "67%"),
+    ("ABAP Developer", 12, "11%"),
     ("Business Users (UAT)", 5, "5%"),
     ("Project Manager", 5, "5%"),
     ("External Teams (HFM, Tagetik, AMANA)", 6, "6%"),
-    ("SAP Basis Administrator", 3, "3%"),
-    ("Total", 96, "100%"),
+    ("SAP Basis Administrator", 5, "5%"),
+    ("Treasury Team", 1.5, "1%"),
+    ("Total", 106, "100%"),
 ]
 r = write_table(
     ws2, r + 2, ["Role", "Effort (PD)", "% of Total"], by_role,
@@ -332,8 +362,9 @@ by_gap = [
     ("5. Income Statement Reporting (Cost of Sales)", "REPORT", 9, "New analytical query + optional CDS extension"),
     ("6. Working Capital Balance Sheet Reporting", "ENHANCEMENT", 5, "CDS view node ID update"),
     ("7. IFRS 16 Lease Accounting Data Loading", "CONFIG", 6, "Mapping table review + Tagetik coordination"),
+    ("SAP Notes & Treasury (Activities 1.7-1.11, 3.8-3.9, 5.8-5.9)", "CONFIG + ADVISORY", 10, "Not one of the original 7 GAPs - added after reviewing SAP Note 3670330 and the TRM open question"),
     ("Cross-cutting (PM, defect resolution, transports, UAT, hypercare)", "-", 30, "Shared across all GAPs"),
-    ("Total", "", 95, ""),
+    ("Total", "", 105, ""),
 ]
 r = write_table(
     ws2, r + 2, ["GAP", "Type", "Effort (PD)", "Notes"], by_gap,
@@ -341,13 +372,14 @@ r = write_table(
 )
 
 by_worktype = [
-    ("Configuration / Customizing (OB58, SM30, table maintenance)", 30, "32%"),
+    ("Configuration / Customizing (OB58, SM30, table maintenance)", 30, "29%"),
     ("Development (CDS views, analytical queries)", 8, "8%"),
-    ("Testing (unit, integration, QA, UAT)", 27, "28%"),
+    ("Testing (unit, integration, QA, UAT)", 27, "26%"),
     ("External Coordination (HFM, Tagetik, AMANA)", 8, "8%"),
-    ("Project Management & Go-Live", 14, "15%"),
-    ("Defect Resolution Buffer", 8, "9%"),
-    ("Total", 95, "100%"),
+    ("Project Management & Go-Live", 14, "13%"),
+    ("Defect Resolution Buffer", 8, "8%"),
+    ("SAP Note Implementation & Treasury Verification", 10, "10%"),
+    ("Total", 105, "100%"),
 ]
 write_table(
     ws2, r + 2, ["Category", "Effort (PD)", "% of Total"], by_worktype,
@@ -360,6 +392,7 @@ write_table(
 ws3 = wb.create_sheet("Milestones & Risks")
 
 milestones = [
+    ("2026-07-18", "SAP Note 3670330 reviewed and child notes identified (new - precedes FSV restructuring)"),
     ("2026-07-25", "Design complete - FSV node structures and HFM positions defined"),
     ("2026-08-15", "FSV restructuring complete in CSD (ZHFM, ZCPL, ZUKV)"),
     ("2026-09-05", "All configuration and development complete in CSD"),
@@ -383,6 +416,10 @@ risks = [
     ("FG/FX filtering required for P&L report", "Adds CDS view extension development (2 extra PD)", "Business decision in Phase 4 activity 4.1; effort already included as optional"),
     ("ZHFM hierarchy node IDs change more extensively than expected", "More CDS view updates needed in working capital report", "Detailed node mapping in Phase 1 activity 1.2 identifies all affected nodes upfront"),
     ("Transport conflicts in CSQ/CSP", "Delays go-live", "Dedicated transport request preparation; coordinate with other project teams"),
+    ("IFRS 18 updates IAS 7 - dividends paid to Investing, interest paid to Financing, interest received to Investing", "Existing cash-flow reports/CDS views built on the old flexible classification may need updates", "Add cash-flow classification check to Phase 2 unit testing (Activity 2.4); validate CDS view in Activity 5.8"),
+    ("SAP's own solution approach (Note 3670330) is still evolving and doesn't cover third-party (HFM) consolidation", "Limited pre-built SAP support beyond the existing FSV/OB58 approach; HFM alignment remains fully this project's responsibility", "Read Note 3696338 (Private Cloud/On-Premise) early in Phase 1 (Activity 1.7); consider a Customer Influence Request; re-check 3670330 periodically"),
+    ("R8: SAP Note 3670330 corrections not valid for the current release", "Delays Activity 1.7/3.8; may require upgrade or manual backport", "Check each note's Validity section during Activity 1.7; escalate to Basis/upgrade planning early if needed (Probability: Low)"),
+    ("R9: Treasury G/L accounts not correctly classified under IFRS 18", "Misstated Operating/Investing/Financing subtotals for treasury-driven P&L items, discovered late", "Activities 1.10 and 5.9 explicitly verify this; treat confirmed TRM accounts like the ZFI_IFRS16 review in GAP 7 (Probability: Medium)"),
 ]
 r = write_table(
     ws3, r + 2, ["Risk", "Impact", "Mitigation"], risks,
@@ -457,7 +494,88 @@ for i, row_data in enumerate(raci_rows):
 
 autosize(ws4, [40] + [13] * len(raci_roles))
 
-for ws in (ws1, ws2, ws3, ws4):
+# ============================================================
+# Sheet 5 — SAP Notes & References
+# ============================================================
+ws5 = wb.create_sheet("SAP Notes & References")
+
+confirmed_notes = [
+    ("3670330", "Financial Reporting according to IFRS 18 in SAP S/4HANA Cloud, SAP S/4HANA", "FI-GL", "v7, released 06.01.2026",
+     "Central/umbrella note. Read first. Check Validity section and all child notes."),
+    ("3694359", "How to Adopt IFRS 18 for Financial Reporting in S/4HANA Cloud Public Edition", "FI-GL", "Referenced by 3670330",
+     "Low relevance - this landscape is not on Public Edition."),
+    ("3696338", "Advisory Note on IFRS 18 Transition in S/4HANA Private Cloud, S/4HANA", "FI-GL", "Referenced by 3670330",
+     "HIGH relevance - read this one next; matches this landscape's classic transactions/custom ABAP profile."),
+    ("3700153", "Advisory Note on IFRS 18 Transition in SAP ERP", "FI-GL", "Referenced by 3670330",
+     "Low relevance - only applicable if part of the landscape is still on classic ERP/ECC."),
+]
+r = write_table(
+    ws5, 1, ["Note", "Title", "Component", "Validity / Status", "Relevance / Action"], confirmed_notes,
+    widths=[10, 46, 12, 24, 46], banner="Confirmed SAP Notes",
+)
+
+child_note_search = [
+    ("IFRS 18", "FI-GL", "Core GL changes for IFRS 18 presentation"),
+    ("IFRS 18", "FI-FIO-GL-HIE", "Hierarchy/FSV enhancements for new categories"),
+    ("IFRS 18", "FI-FIO-GL-REP", "Financial statement reporting updates"),
+    ("IFRS 18", "FI-FIO-GL-KPI", "New semantic tags for Operating Profit, Profit before Financing"),
+    ("IFRS 18", "FIN-CS", "Group Reporting / consolidation impacts"),
+    ("IFRS 18", "CA-GTF-CSC-EDO", "Electronic disclosure / XBRL taxonomy updates"),
+]
+r = write_table(
+    ws5, r + 2, ["Search Term", "Application Component", "Why"], child_note_search,
+    widths=[20, 22, 46], banner="Child / Further Note Search Guide (me.sap.com/notes)",
+)
+
+sap_deliverables = [
+    ("SAP Note 3670330", "Central IFRS 18 note", "Confirmed - see table above", "Review + implement via SNOTE (Activities 1.7, 3.8)"),
+    ("Scope Item 1SG (Group Reporting reference content)", "Extends/restructures Consolidation CoA and Income Statement; updates Cash Flow Statement starting point to Operating Profit", "Confirmed via SAP+PwC blog (giulio_peretti, 2025-11-06)", "Reference only - this landscape uses HFM, not SAP Group Reporting (Activity 1.11)"),
+    ("SAP IFRS 18 webinar series", "Technical guidance sessions, Feb/Mar 2026", "Recordings likely available", "Review recordings (Activity 1.8)"),
+    ("New semantic tags (Operating Profit, Profit before Financing and Income Tax)", "KPI framework / Cash Flow Statement app support", "Not yet confirmed for this release", "Verify during Activity 3.9"),
+    ("Cash Flow Statement CDS view 2CCFICSHFLINDIFRS", "Indirect method CFS for IFRS", "Available in current release; update status not yet confirmed", "Validate during Activity 5.8"),
+]
+r = write_table(
+    ws5, r + 2, ["Deliverable", "Description", "Status", "Action / Activity Reference"], sap_deliverables,
+    widths=[40, 46, 34, 36], banner="SAP Content Deliverables Tracker",
+)
+
+blog_references = [
+    ("IFRS 18 Explained: What SAP S/4HANA Customers Need to Know Before 2027", "Praveenirrinki (SAP)", "2025-12-02", "SAP Community - Financial Management Blog Posts by SAP",
+     "General IFRS 18 background; confirms Note 3670330; links SAP webinar series (Feb/Mar 2026)"),
+    ("IFRS 18 and SAP S/4HANA Group Reporting: What It Means and How to Get Ahead", "giulio_peretti, co-authored with PwC", "2025-11-06", "SAP Community - Financial Management Blog Posts by Members",
+     "Detailed SAP Group Reporting IFRS 18 capabilities; Scope Item 1SG update; PwC implementation approach"),
+    ("Unlocking the Value of SAP TRM for Corporate Treasury", "mezeshan", "2026 (exact date not captured)", "SAP Community - Financial Management Blog Posts by Members",
+     "General TRM tips; item #15 corroborates Note 3670330; links a treasury-specific IFRS 18 blog (URL truncated, not yet reviewed)"),
+]
+r = write_table(
+    ws5, r + 2, ["Blog Title", "Author", "Date", "Platform", "Key Takeaway"], blog_references,
+    widths=[42, 26, 16, 34, 50], banner="External Source References",
+)
+
+treasury_gl_checklist = [
+    ("Interest expense on borrowings", "Financing", "Not confirmed - depends on whether SAP TRM is in use", "Verify in Activity 1.10"),
+    ("Interest income on deposits", "Investing", "Not confirmed - depends on whether SAP TRM is in use", "Verify in Activity 1.10"),
+    ("Dividend income", "Investing", "Not confirmed - depends on whether SAP TRM is in use", "Verify in Activity 1.10"),
+    ("FX gains/losses on financial instruments", "Depends on underlying instrument's category", "Not confirmed - review operating vs. financing FX", "Verify in Activity 1.10"),
+    ("Fair value gains/losses on derivatives", "Depends on hedge designation", "Not confirmed - review hedge accounting treatment", "Verify in Activity 1.10"),
+    ("Depreciation of RoU assets (IFRS 16)", "Operating", "Confirmed in GAP 7 (accounts 670000/670002/670005/670006)", "Already covered by Activity 3.4"),
+    ("Interest on lease liabilities (IFRS 16)", "Financing", "Confirmed in GAP 7 (accounts 661300/661302/661305/661306)", "Already covered by Activity 3.4"),
+    ("Other lease expenses (IFRS 16)", "To be verified", "Confirmed in GAP 7 (accounts 671110-671306)", "Already covered by Activity 3.4"),
+    ("Amortization (bond/security premium or discount)", "Depends on instrument", "Not confirmed - depends on whether SAP TRM is in use", "Verify in Activity 1.10"),
+    ("Current portion reclassification (loans)", "Balance sheet only - not a P&L category", "N/A - reclassification is BS, not P&L", "No P&L category action needed"),
+    ("Impairment losses/reversals (financial instruments)", "Operating or Financing, depending on policy", "Not confirmed - depends on whether SAP TRM is in use", "Verify in Activity 1.10"),
+]
+write_table(
+    ws5, r + 2,
+    ["Treasury Posting Type", "IFRS 18 Category", "Confirmation Status", "Next Step"],
+    treasury_gl_checklist,
+    widths=[42, 40, 46, 30], banner="Treasury G/L Account Classification Checklist",
+)
+
+# ============================================================
+# Page setup for all sheets
+# ============================================================
+for ws in (ws1, ws2, ws3, ws4, ws5):
     ws.page_setup.orientation = "landscape"
     ws.page_setup.fitToWidth = 1
     ws.page_setup.fitToHeight = 0

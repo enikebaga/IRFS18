@@ -3,8 +3,15 @@
 A plain-language explainer of IFRS 18 and a summary of SAP's stated
 roadmap for supporting it, drawing on three sources:
 
-1. An initial external blog post (Jul 2026) — general IFRS 18
-   background.
+1. **"IFRS 18 Explained: What SAP S/4HANA Customers Need to Know Before
+   2027"** by Praveenirrinki (SAP), published 2025-12-02 on SAP
+   Community — *Financial Management Blog Posts by SAP* (an official
+   SAP-authored blog, not a generic third-party post as originally
+   assumed) — general IFRS 18 background. A comment on this blog from
+   KatharinaR (SAP Product and Topic Expert) links to an **SAP webinar
+   series (Feb/Mar 2026)** with further technical guidance; the
+   registration link was truncated in the source shared for this
+   project, so the recordings haven't been located/reviewed yet.
 2. The **verified text of SAP Note 3670330** (v7, released 06.01.2026)
    and its three edition-specific companion notes — see
    [`OSS-Notes-Guidance.md`](OSS-Notes-Guidance.md) for full note
@@ -33,16 +40,17 @@ This page complements
 landscape's specific GAPs).
 
 > **Note on the "1SG" reference:** an earlier version of this page
-> (based only on source #1, an unattributed blog) claimed SAP's IFRS 18
-> solution would be "delivered via the 1SG content package for SAP
-> Group Reporting," and attributed that claim to Note 3670330. That
-> attribution was **wrong** — the verified text of Note 3670330 does
-> **not** mention "1SG" or Group Reporting at all. However, source #3
-> above (the SAP+PwC blog) independently confirms that **"Scope Item
-> 1SG" is real** — it's SAP Group Reporting's IFRS-compliant reference
-> content package, and it genuinely is being extended/restructured for
-> IFRS 18 (see below). So the underlying fact turned out to be
-> substantially correct, just **misattributed to the wrong note** by
+> (based only on source #1, the Praveenirrinki blog, before its full
+> attribution was known) claimed SAP's IFRS 18 solution would be
+> "delivered via the 1SG content package for SAP Group Reporting," and
+> attributed that claim to Note 3670330. That attribution was **wrong**
+> — the verified text of Note 3670330 does **not** mention "1SG" or
+> Group Reporting at all. However, source #3 above (the SAP+PwC blog)
+> independently confirms that **"Scope Item 1SG" is real** — it's SAP
+> Group Reporting's IFRS-compliant reference content package, and it
+> genuinely is being extended/restructured for IFRS 18 (see below). So
+> the underlying fact turned out to be substantially correct, just
+> **misattributed to the wrong note** by
 > the original source. Note 3670330 itself remains scoped to general
 > FI-GL/functional-area/valuation-run flexibility, separate from the
 > Group-Reporting-specific 1SG update described by SAP+PwC.

@@ -30,6 +30,9 @@ gantt
     Define new FSV hierarchy node structures       :p1b, 2026-07-14, 8d
     Define new HFM structure positions             :p1c, after p1a, 5d
     Kick-off external teams (HFM, Tagetik, AMANA) :p1d, 2026-07-21, 3d
+    Review/implement SAP Note 3670330              :p1e, 2026-07-14, 4d
+    Review SAP IFRS 18 webinar recordings          :p1f, 2026-07-14, 2d
+    Review treasury G/L accounts for IFRS 18       :p1g, 2026-07-17, 5d
 
     section Phase 2 — FSV Restructuring (GAP 1)
     Restructure ZHFM in CSD                       :p2a, 2026-07-28, 7d
@@ -42,6 +45,8 @@ gantt
     Re-run mapping program and validate            :p3b, after p3a, 3d
     Review IFRS 16 mapping table ZFI_IFRS16        :p3c, after p2d, 5d
     Activate and configure Fiori apps              :p3d, after p2d, 3d
+    Apply Note 3670330 corrections via SNOTE       :p3e, after p2d, 2d
+    Verify new semantic tags                       :p3f, after p2d, 2d
 
     section Phase 4 — Development (GAPs 5, 6)
     Evaluate FG/FX filtering requirement           :p4a, after p2d, 2d
@@ -55,6 +60,8 @@ gantt
     Validate HFM output with HFM team               :p5b, after p5a, 4d
     Test AMANA proxy with new FSVs                 :p5c, after p3d, 3d
     External system alignment (HFM, Tagetik, AMANA):p5d, 2026-08-18, 20d
+    Validate Cash Flow Statement CDS view          :p5e, after p3e, 2d
+    Validate treasury valuation postings           :p5f, after p2d, 3d
 
     section Phase 6 — Integration Testing (CSD)
     End-to-end FSV to HFM extraction               :p6a, after p5b, 5d
@@ -84,18 +91,18 @@ listed prerequisite is done — everything else must wait its turn.
 
 | Exec. Order | Activity ID(s) — can run in parallel | Prerequisite (Exec. Order) |
 |---|---|---|
-| 1 | 1.1 | – (start here) |
+| 1 | 1.1, 1.7, 1.8, 1.9, 1.11 | – (start here) |
 | 2 | 1.2 | 1 |
-| 3 | 1.3, 1.4, 1.5, 1.6 | 1 |
+| 3 | 1.3, 1.4, 1.5, 1.6, 1.10 | 1 |
 | 4 | 2.1 | 2, 3 |
 | 5 | 2.2, 2.3 | 4 |
 | 6 | 2.4 | 5 |
 | 7 | 2.5 | 6 |
-| 8 | 3.1, 3.4, 3.6, 4.1, 4.4 | 7 |
+| 8 | 3.1, 3.4, 3.6, 3.8, 3.9, 4.1, 4.4 | 7 |
 | 9 | 3.2, 4.2, 4.3 | 8 |
 | 10 | 3.3, 3.5, 3.7, 4.5, 4.6 | 9 |
-| 11 | 5.1, 5.3, 4.7, 4.8 | 10 |
-| 12 | 5.2, 5.4 | 11 |
+| 11 | 5.1, 5.3, 4.7, 4.8, 5.9 | 10 |
+| 12 | 5.2, 5.4, 5.8 | 11 |
 | 13 | 5.5, 5.6, 5.7 | 3 *(runs in the background throughout Phases 2–5)* |
 | 14 | 6.1 | 12 |
 | 15 | 6.2, 6.3, 6.4, 6.5, 6.6 | 11, 12 |
@@ -135,7 +142,12 @@ Execution Order above.
 | 1.4 | 3 | Kick-off coordination with HFM team (new structure positions, receiving format) | Meeting — no transaction | FC + HFM | 1 |
 | 1.5 | 3 | Kick-off coordination with Tagetik team (account code alignment) | Meeting — no transaction | FC + Tagetik | 1 |
 | 1.6 | 3 | Kick-off coordination with AMANA team (new category handling) | Meeting — no transaction | FC + AMANA | 0.5 |
-| | | **Phase 1 Subtotal** | | | **13.5** |
+| 1.7 | 1 | Review and implement SAP Note 3670330 — check validity for S/4HANA 2023/current release, review all child notes (3694359, 3696338, 3700153), implement corrections | **SNOTE** (Note Implementation) for Note `3670330` and its child notes; see [`OSS-Notes-Guidance.md`](OSS-Notes-Guidance.md) | Basis + FC | 2 |
+| 1.8 | 1 | Review SAP IFRS 18 webinar recordings (Feb/Mar 2026) for technical guidance | External webinar review — no transaction | FC | 1 |
+| 1.9 | 1 | Review the treasury-focused IFRS 18 SAP Community blog and check for TRM-specific notes | External blog/Support Portal search — no transaction; see [`IFRS18-Overview-and-SAP-Roadmap.md`](IFRS18-Overview-and-SAP-Roadmap.md#related-consideration-sap-treasury-and-risk-management-trm) | FC | 0.5 |
+| 1.10 | 3 | Review treasury G/L accounts for IFRS 18 classification (interest, FX, dividends, fair value) — confirms/resolves the TRM open question raised above | **SM30**/**SE16N** on TRM accounting-derivation config (Account Assignment Reference) and affected G/L accounts | FC + Treasury | 2 |
+| 1.11 | 1 | Use the SAP Group Reporting Scope Item 1SG restructured Income Statement as a reference blueprint for FSV design (informs Activity 1.2) | Review of SAP Best Practice content (Scope Item 1SG) — reference only, no transaction in this landscape | FC | 1 |
+| | | **Phase 1 Subtotal** | | | **20** |
 
 ### Phase 2 — FSV Restructuring in CSD (Jul 28 – Aug 15 | 3 weeks)
 
@@ -159,7 +171,9 @@ Execution Order above.
 | 3.5 | 10 | Update `ZFI_IFRS16` entries if chart of accounts changes or Tagetik introduces new codes | **ZFI_IFRS16_MAPPING** / **SM30** on table `ZFI_IFRS16` (field `HKONT` / `TAGETIC_ACCOUNT`) | FC | 1 |
 | 3.6 | 8 | Activate Fiori apps F0708 and W0161 in Fiori Launchpad | **/UI2/FLPD_CUST** (Fiori Launchpad Designer) — activate app IDs **F0708** and **W0161** | Basis/FC | 1 |
 | 3.7 | 10 | Configure Fiori apps for IFRS FSVs (ZHFM, ZCPL, ZUKV) | App-specific configuration of **F0708** / **W0161** — bind default FSV parameters to `ZHFM`, `ZCPL`, `ZUKV` | FC | 1 |
-| | | **Phase 3 Subtotal** | | | **10.5** |
+| 3.8 | 8 | Apply SAP Note 3670330 child notes / corrections to CSD | **SNOTE** (Note Implementation) | Basis | 1 |
+| 3.9 | 8 | Verify new semantic tags for "Operating Profit" and "Profit before Financing and Income Tax" (if delivered by SAP's notes) | **OB58** hierarchy node semantic-tag assignment; KPI framework config | FC | 1 |
+| | | **Phase 3 Subtotal** | | | **12.5** |
 
 ### Phase 4 — Development (Aug 18 – Sep 5 | 3 weeks, parallel with Phase 3)
 
@@ -186,7 +200,9 @@ Execution Order above.
 | 5.5 | 13 | Coordinate HFM-side configuration updates (new accounts/categories in HFM) | External system (Oracle HFM) — no SAP transaction | HFM team | 3 |
 | 5.6 | 13 | Coordinate Tagetik account code alignment | External system (Tagetik) — no SAP transaction | Tagetik team | 2 |
 | 5.7 | 13 | Coordinate AMANA receiving system updates | External system (AMANA DMS) — no SAP transaction | AMANA team | 1 |
-| | | **Phase 5 Subtotal** | | | **11** |
+| 5.8 | 12 | Validate Cash Flow Statement CDS view after SAP Note implementation | CDS view `2CCFICSHFLINDIFRS` (Cash Flow Statement – Indirect Method for IFRS); test via report/app | FC | 0.5 |
+| 5.9 | 11 | Validate treasury valuation postings are correctly classified in the restructured FSVs | Run **TPM44**/**TPM1**/**TPM18** closing postings, then **F.01**/**RFBILA00** to verify classification | FC + Treasury | 1 |
+| | | **Phase 5 Subtotal** | | | **12.5** |
 
 ### Phase 6 — Integration Testing in CSD (Sep 15 – Oct 10 | 3.5 weeks)
 
@@ -235,27 +251,36 @@ table above if activities must be done one at a time by a single team.
 
 | Phase | Duration | Effort (PD) |
 |---|---|---|
-| 1. Design & Preparation | 2 weeks | 13.5 |
+| 1. Design & Preparation | 2 weeks | 20.0 |
 | 2. FSV Restructuring | 3 weeks | 14.0 |
-| 3. Configuration Updates | 2 weeks | 10.5 |
+| 3. Configuration Updates | 2 weeks | 12.5 |
 | 4. Development | 3 weeks | 11.0 |
-| 5. Interface Validation | 3 weeks | 11.0 |
+| 5. Interface Validation | 3 weeks | 12.5 |
 | 6. Integration Testing | 3.5 weeks | 12.5 |
 | 7. QA Transport & UAT | 4 weeks | 14.5 |
 | 8. Production Go-Live | 4 weeks | 8.0 |
-| **Total** | **~22 weeks** | **~95 person-days** |
+| **Total** | **~22 weeks** | **~105 person-days** |
+
+*(Updated Jul 14, 2026 — added 9 activities [1.7–1.11, 3.8–3.9, 5.8–5.9]
+worth ~10 PD, covering review/implementation of SAP Note 3670330 and its
+child notes, and verification of treasury (TRM) G/L account
+classification. Previous total: ~95 PD. See the "Notes" below and
+[`IFRS18-Overview-and-SAP-Roadmap.md`](IFRS18-Overview-and-SAP-Roadmap.md)
+and [`OSS-Notes-Guidance.md`](OSS-Notes-Guidance.md) for the source
+material behind this update.)*
 
 ### By Role
 
 | Role | Effort (PD) | % of Total |
 |---|---|---|
-| FI/CO Functional Consultant | 65 | 68% |
-| ABAP Developer | 12 | 13% |
+| FI/CO Functional Consultant | 71.5 | 67% |
+| ABAP Developer | 12 | 11% |
 | Business Users (UAT) | 5 | 5% |
 | Project Manager | 5 | 5% |
 | External Teams (HFM, Tagetik, AMANA) | 6 | 6% |
-| SAP Basis Administrator | 3 | 3% |
-| **Total** | **~96** | **100%** |
+| SAP Basis Administrator | 5 | 5% |
+| Treasury Team | 1.5 | 1% |
+| **Total** | **~106** | **100%** |
 
 ### By GAP
 
@@ -268,24 +293,26 @@ table above if activities must be done one at a time by a single team.
 | 5. Income Statement Reporting (Cost of Sales) | REPORT | 9 | New analytical query + optional CDS extension |
 | 6. Working Capital Balance Sheet Reporting | ENHANCEMENT | 5 | CDS view node ID update |
 | 7. IFRS 16 Lease Accounting Data Loading | CONFIG | 6 | Mapping table review + Tagetik coordination |
+| SAP Notes & Treasury (Activities 1.7–1.11, 3.8–3.9, 5.8–5.9) | CONFIG + ADVISORY | 10 | Not one of the original 7 GAPs — added once SAP Note 3670330 and the TRM open question were investigated |
 | Cross-cutting (PM, defect resolution, transports, UAT, hypercare) | — | 30 | Shared across all GAPs |
-| **Total** | | **~95** | |
+| **Total** | | **~105** | |
 
 ### By Work Type
 
 | Category | Effort (PD) | % of Total |
 |---|---|---|
-| Configuration / Customizing (OB58, SM30, table maintenance) | 30 | 32% |
+| Configuration / Customizing (OB58, SM30, table maintenance) | 30 | 29% |
 | Development (CDS views, analytical queries) | 8 | 8% |
-| Testing (unit, integration, QA, UAT) | 27 | 28% |
+| Testing (unit, integration, QA, UAT) | 27 | 26% |
 | External Coordination (HFM, Tagetik, AMANA) | 8 | 8% |
-| Project Management & Go-Live | 14 | 15% |
-| Defect Resolution Buffer | 8 | 9% |
-| **Total** | **~95** | **100%** |
+| Project Management & Go-Live | 14 | 13% |
+| Defect Resolution Buffer | 8 | 8% |
+| SAP Note Implementation & Treasury Verification | 10 | 10% |
+| **Total** | **~105** | **100%** |
 
 **Notes:**
 
-- **68% of the effort is functional consultant work** — this is a
+- **67% of the effort is functional consultant work** — this is a
   configuration-heavy project, not a development-heavy one. Only GAPs 5
   and 6 require developer involvement, and even GAP 6 is a small CDS
   view update.
@@ -296,17 +323,23 @@ table above if activities must be done one at a time by a single team.
   person-days of SAP-side coordination effort, but the external teams'
   own work is outside this estimate and represents the biggest schedule
   risk.
-- **The 8 PD defect resolution buffer** (~9%) is conservative. If the FSV
-  design is well-defined upfront in Phase 1, defects should be minimal
-  since most changes are configuration-driven.
+- **The 8 PD defect resolution buffer** (~9% of the original 95 PD) is
+  conservative. If the FSV design is well-defined upfront in Phase 1,
+  defects should be minimal since most changes are configuration-driven.
 - **The optional FG/FX CDS extension** (GAP 5, activity 4.3) adds 2 PD if
   the business decides the foreign currency valuation exclusion is still
   required. This is already included in the estimate.
+- **The SAP Note / Treasury addition** (10 PD, activities 1.7–1.11,
+  3.8–3.9, 5.8–5.9) resolves the "Unconfirmed TRM" question raised
+  earlier by adding an explicit verification activity (1.10, 5.9) rather
+  than leaving it open, and adds a dedicated workstream to review and
+  implement SAP Note 3670330 and its child notes.
 
 ## Key Milestones
 
 | Date | Milestone |
 |---|---|
+| Jul 18 | SAP Note 3670330 reviewed and child notes identified (new — precedes FSV restructuring) |
 | Jul 25 | Design complete — FSV node structures and HFM positions defined |
 | Aug 15 | FSV restructuring complete in CSD (ZHFM, ZCPL, ZUKV) |
 | Sep 5 | All configuration and development complete in CSD |
@@ -332,7 +365,8 @@ table above if activities must be done one at a time by a single team.
 | Transport conflicts in CSQ/CSP | Delays go-live | Dedicated transport request preparation; coordinate with other project teams |
 | IFRS 18 also updates IAS 7 — dividends paid move to Investing, interest paid to Financing, interest received to Investing, removing the old classification choice | Existing cash-flow statement reports/CDS views built on the old flexible classification may need updates; not currently scoped as its own GAP | Add an explicit cash-flow classification check to Phase 2 unit testing (Activity 2.4); see [`IFRS18-Overview-and-SAP-Roadmap.md`](IFRS18-Overview-and-SAP-Roadmap.md) |
 | SAP's own IFRS 18 solution approach (Note 3670330, confirmed v7, released 06.01.2026) is still evolving — SAP is only evaluating flexibility in existing FI-GL/functional-area/valuation-run features, not committing to a specific delivered package, and none of the 4 confirmed SAP notes address third-party (HFM) consolidation | Limited additional pre-built SAP support to rely on beyond the existing FSV/OB58 approach already used in GAP 1; HFM alignment (GAP 3) remains fully this project's responsibility | Read Note 3696338 (Private Cloud/On-Premise advisory) early in Phase 1; consider a Customer Influence Request per SAP's recommendation; re-check 3670330 periodically since it's a living document — see [`OSS-Notes-Guidance.md`](OSS-Notes-Guidance.md) and [`IFRS18-Overview-and-SAP-Roadmap.md`](IFRS18-Overview-and-SAP-Roadmap.md) |
-| **Unconfirmed:** it isn't yet known whether SAP Treasury and Risk Management (TRM) is used in this landscape for loans/deposits/FX/derivatives. If it is, TRM-posted interest/FX G/L accounts also need correct IFRS 18 categorization | A potential 8th GAP not currently scoped — TRM account mapping could be missed by the current GAP 1/GAP 2 restructuring if not explicitly checked | Confirm TRM usage with Finance/Treasury during Phase 1; if confirmed, add a mapping-verification activity analogous to Activity 3.4/3.5 (the `ZFI_IFRS16` review) — see [`IFRS18-Overview-and-SAP-Roadmap.md`](IFRS18-Overview-and-SAP-Roadmap.md#related-consideration-sap-treasury-and-risk-management-trm) |
+| **R8 — SAP Note 3670330 corrections not valid for the current release.** Any corrections/child notes may target S/4HANA 2025 rather than the current release, requiring an upgrade or manual backport | Delays Activity 1.7/3.8 (note implementation) and could reduce the amount of pre-built SAP support actually usable | Check each note's "Validity" section during Activity 1.7; escalate to Basis/upgrade planning early if backport isn't available (Probability: Low) |
+| **R9 — Treasury G/L accounts not correctly classified under IFRS 18.** If SAP TRM (or an equivalent treasury system) is used for loans/deposits/FX/derivatives, its interest/FX/dividend postings may end up in the wrong IFRS 18 category if not explicitly checked | Misstated Operating/Investing/Financing subtotals for treasury-driven P&L items, discovered late (potentially during UAT or audit) | Activities 1.10 and 5.9 now explicitly verify this (replacing the earlier "unconfirmed" open question) — confirm TRM usage with Finance/Treasury as part of 1.10, and treat any confirmed TRM G/L accounts the same way GAP 7 already treats `ZFI_IFRS16` accounts (Probability: Medium) |
 
 ### Assumptions
 

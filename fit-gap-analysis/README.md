@@ -12,25 +12,42 @@ for demand 288 - IFRS 18.
   identified GAPs (SAP FI/CO/Consolidation scope), with dependencies and
   effort/type summary tables.
 - [`IFRS18-Project-Plan.md`](IFRS18-Project-Plan.md) — the 8-phase,
-  60-activity project plan derived from the GAPs: Gantt chart, a
-  recommended execution sequence (respecting dependencies), a detailed
-  activity breakdown listing the exact SAP transaction(s)/development
-  object(s) each activity touches, effort summary (by phase/role/GAP/work
-  type), milestones, risks & assumptions. Updated Jul 14, 2026 with 9
-  additional activities (~10 PD) covering SAP Note 3670330
-  review/implementation and treasury (TRM) G/L account verification —
-  total effort now ~105 PD (was ~95).
+  60-activity project plan derived from the GAPs: rendered Gantt chart
+  image + editable mermaid source, a recommended execution sequence
+  (respecting dependencies), a detailed activity breakdown listing the
+  exact SAP transaction(s)/development object(s) each activity touches,
+  effort summary (by phase/role/GAP/work type), milestones, risks &
+  assumptions. Updated Jul 14, 2026 with 9 additional activities (~10 PD)
+  covering SAP Note 3670330 review/implementation and treasury (TRM) G/L
+  account verification — total effort now ~105 PD (was ~95).
+- [`IFRS18-Project-Timeline.png`](IFRS18-Project-Timeline.png) — a
+  professionally rendered Gantt chart (phase bars, milestones, IFRS 18
+  effective-date marker), generated via
+  [`generate_gantt_chart.py`](generate_gantt_chart.py) (matplotlib).
+  Embedded in the `.md`, the `.xlsx` Dashboard, and the `.pptx` deck.
 - [`IFRS18_Adoption_Project_Plan.xlsx`](IFRS18_Adoption_Project_Plan.xlsx) —
-  the same project plan as an editable Excel workbook (5 sheets: Project
-  Plan — including Execution Order and SAP Transaction(s)/Object(s)
-  columns — Effort Summary, Milestones & Risks, RACI Matrix, and a new
-  **SAP Notes & References** sheet with the confirmed SAP Notes, a
-  child-note search guide, an SAP content deliverables tracker, external
-  source references, and a treasury G/L account classification
-  checklist), for tracking and resource assignment.
-- [`generate_project_plan_xlsx.py`](generate_project_plan_xlsx.py) — the
-  `openpyxl` script used to generate the workbook, so it can be
-  regenerated/edited programmatically.
+  the same project plan as an editable Excel workbook, now opening on a
+  **Dashboard** tab (KPI summary cards, the embedded timeline image, and
+  native Excel bar/pie charts for effort by phase/role/work type),
+  followed by 5 more sheets: Project Plan — including Execution Order and
+  SAP Transaction(s)/Object(s) columns — Effort Summary, Milestones &
+  Risks, RACI Matrix, and **SAP Notes & References** (confirmed SAP
+  Notes, a child-note search guide, an SAP content deliverables tracker,
+  external source references, and a treasury G/L account classification
+  checklist).
+- [`IFRS18-Project-Plan-Overview.pptx`](IFRS18-Project-Plan-Overview.pptx)
+  — a 5-slide, presentation-ready executive summary (title & KPIs,
+  timeline, effort breakdown with native charts, key milestones, top
+  risks & next steps), generated via
+  [`generate_project_plan_pptx.py`](generate_project_plan_pptx.py), for
+  sharing the plan with stakeholders who want slides rather than a
+  spreadsheet.
+- [`generate_gantt_chart.py`](generate_gantt_chart.py) /
+  [`generate_project_plan_xlsx.py`](generate_project_plan_xlsx.py) /
+  [`generate_project_plan_pptx.py`](generate_project_plan_pptx.py) — the
+  scripts used to generate the timeline image, workbook, and slide deck
+  respectively (run in that order, since the xlsx/pptx embed the PNG),
+  so they can be regenerated/edited programmatically.
 - [`OSS-Notes-Guidance.md`](OSS-Notes-Guidance.md) — summary of the
   **confirmed** central SAP Note (3670330) and its three edition-specific
   companion notes (3694359 Public Edition, 3696338 Private

@@ -5,10 +5,15 @@ IFRS18-Project-Plan.md.
 
 Usage:
     pip install openpyxl
+    python3 generate_gantt_chart.py       # produces the Gantt PNG first
     python3 generate_project_plan_xlsx.py
 
 Sheets produced:
-    1. Project Plan       - 60 activities across 8 phases, with dates,
+    0. Dashboard           - visual overview: KPI summary cards, the
+                             rendered Gantt chart image, and native Excel
+                             bar/pie charts for effort by phase, by role,
+                             and by work type.
+    1. Project Plan        - 60 activities across 8 phases, with dates,
                              dependencies, execution order, SAP
                              transaction(s)/object(s), and a Status
                              column for tracking. Includes 9 activities
@@ -24,9 +29,13 @@ Sheets produced:
                              G/L account classification checklist.
 """
 
+import os
 from datetime import date, timedelta
 
 from openpyxl import Workbook
+from openpyxl.chart import BarChart, PieChart, Reference
+from openpyxl.chart.label import DataLabelList
+from openpyxl.drawing.image import Image as XLImage
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
@@ -334,8 +343,9 @@ by_phase = [
     ("8. Production Go-Live", "4 weeks", 8.0),
     ("Total", "~22 weeks", 105.0),
 ]
+by_phase_start = 1
 r = write_table(
-    ws2, 1, ["Phase", "Calendar Duration", "Effort (PD)"], by_phase,
+    ws2, by_phase_start, ["Phase", "Calendar Duration", "Effort (PD)"], by_phase,
     widths=[32, 20, 14], banner="Effort by Phase (updated Jul 14, 2026 - was 95 PD; +10 PD for SAP Note / Treasury activities)",
 )
 
@@ -349,8 +359,9 @@ by_role = [
     ("Treasury Team", 1.5, "1%"),
     ("Total", 106, "100%"),
 ]
+by_role_start = r + 2
 r = write_table(
-    ws2, r + 2, ["Role", "Effort (PD)", "% of Total"], by_role,
+    ws2, by_role_start, ["Role", "Effort (PD)", "% of Total"], by_role,
     widths=[36, 14, 12], banner="Effort by Role",
 )
 
@@ -366,8 +377,9 @@ by_gap = [
     ("Cross-cutting (PM, defect resolution, transports, UAT, hypercare)", "-", 30, "Shared across all GAPs"),
     ("Total", "", 105, ""),
 ]
+by_gap_start = r + 2
 r = write_table(
-    ws2, r + 2, ["GAP", "Type", "Effort (PD)", "Notes"], by_gap,
+    ws2, by_gap_start, ["GAP", "Type", "Effort (PD)", "Notes"], by_gap,
     widths=[46, 20, 14, 40], banner="Effort by GAP",
 )
 
@@ -381,8 +393,9 @@ by_worktype = [
     ("SAP Note Implementation & Treasury Verification", 10, "10%"),
     ("Total", 105, "100%"),
 ]
-write_table(
-    ws2, r + 2, ["Category", "Effort (PD)", "% of Total"], by_worktype,
+by_worktype_start = r + 2
+r = write_table(
+    ws2, by_worktype_start, ["Category", "Effort (PD)", "% of Total"], by_worktype,
     widths=[46, 14, 12], banner="Effort by Work Type",
 )
 
@@ -573,9 +586,151 @@ write_table(
 )
 
 # ============================================================
+# Sheet 0 — Dashboard (visual overview, placed as the first tab)
+# ============================================================
+ws0 = wb.create_sheet("Dashboard", 0)
+ws0.sheet_view.showGridLines = False
+
+title_cell = ws0.cell(row=1, column=1, value="IFRS 18 Adoption — Project Plan Dashboard")
+title_cell.font = Font(bold=True, size=18, color="1F3B73")
+ws0.cell(row=2, column=1, value="288 - IFRS 18  |  Updated Jul 14, 2026").font = Font(
+    size=10.5, italic=True, color="666666"
+)
+
+# ---- KPI summary cards --------------------------------------------------
+kpis = [
+    ("TOTAL EFFORT", "~105 PD", "was ~95 PD before SAP Note + Treasury review"),
+    ("DURATION", "~22 weeks", "mid-July to early December 2026"),
+    ("ACTIVITIES", "60", "across 8 phases"),
+    ("GO-LIVE TARGET", "10 Nov 2026", "ahead of the 1 Jan 2027 effective date"),
+]
+kpi_col_width = 4
+kpi_start_col = 1
+kpi_row = 4
+for i, (label, value, sub) in enumerate(kpis):
+    col = kpi_start_col + i * kpi_col_width
+    ws0.merge_cells(start_row=kpi_row, start_column=col, end_row=kpi_row, end_column=col + kpi_col_width - 2)
+    ws0.merge_cells(start_row=kpi_row + 1, start_column=col, end_row=kpi_row + 1, end_column=col + kpi_col_width - 2)
+    ws0.merge_cells(start_row=kpi_row + 2, start_column=col, end_row=kpi_row + 2, end_column=col + kpi_col_width - 2)
+    label_cell = ws0.cell(row=kpi_row, column=col, value=label)
+    label_cell.font = Font(bold=True, size=9.5, color="FFFFFF")
+    label_cell.fill = PatternFill("solid", fgColor="8EA9DB")
+    label_cell.alignment = WRAP_CENTER
+    value_cell = ws0.cell(row=kpi_row + 1, column=col, value=value)
+    value_cell.font = Font(bold=True, size=20, color="1F3B73")
+    value_cell.fill = PatternFill("solid", fgColor="F2F2F2")
+    value_cell.alignment = WRAP_CENTER
+    sub_cell = ws0.cell(row=kpi_row + 2, column=col, value=sub)
+    sub_cell.font = Font(size=8.5, italic=True, color="666666")
+    sub_cell.fill = PatternFill("solid", fgColor="F2F2F2")
+    sub_cell.alignment = WRAP_CENTER
+    for rr in (kpi_row, kpi_row + 1, kpi_row + 2):
+        for cc in range(col, col + kpi_col_width - 1):
+            ws0.cell(row=rr, column=cc).border = BORDER
+    ws0.row_dimensions[kpi_row + 1].height = 34
+
+# ---- Embedded Gantt chart image -----------------------------------------
+gantt_row = kpi_row + 5
+ws0.cell(row=gantt_row, column=1, value="Project Timeline").font = Font(
+    bold=True, size=12, color="1F3B73"
+)
+gantt_image_path = "IFRS18-Project-Timeline.png"
+if os.path.exists(gantt_image_path):
+    img = XLImage(gantt_image_path)
+    img.width = 920
+    img.height = 460
+    ws0.add_image(img, f"A{gantt_row + 1}")
+    chart_area_rows = 24
+else:
+    ws0.cell(
+        row=gantt_row + 1, column=1,
+        value=(
+            "Gantt chart image not found - run 'python3 generate_gantt_chart.py' "
+            "before this script to include it here."
+        ),
+    ).font = Font(italic=True, color="C00000")
+    chart_area_rows = 2
+
+# ---- Native Excel charts: Effort by Phase / Role / Work Type ------------
+charts_row = gantt_row + 1 + chart_area_rows + 1
+ws0.cell(row=charts_row, column=1, value="Effort Breakdown").font = Font(
+    bold=True, size=12, color="1F3B73"
+)
+
+phase_chart = BarChart()
+phase_chart.type = "bar"  # horizontal - avoids rotated/clipped category labels
+phase_chart.title = "Effort by Phase (PD)"
+phase_chart.style = 10
+phase_chart.height = 9
+phase_chart.width = 16
+phase_chart.gapWidth = 40
+phase_n = len(by_phase) - 1  # exclude "Total" row
+phase_cats = Reference(ws2, min_col=1, min_row=by_phase_start + 2, max_row=by_phase_start + 1 + phase_n)
+phase_vals = Reference(ws2, min_col=3, min_row=by_phase_start + 1, max_row=by_phase_start + 1 + phase_n)
+phase_chart.add_data(phase_vals, titles_from_data=True)
+phase_chart.set_categories(phase_cats)
+phase_chart.legend = None
+phase_chart.dataLabels = DataLabelList()
+phase_chart.dataLabels.showVal = True
+phase_chart.dataLabels.showCatName = False
+phase_chart.dataLabels.showSerName = False
+phase_chart.dataLabels.showLegendKey = False
+phase_chart.dataLabels.numFmt = "0.#"
+phase_chart.y_axis.delete = False
+phase_chart.x_axis.delete = False
+ws0.add_chart(phase_chart, f"A{charts_row + 1}")
+
+role_chart = BarChart()
+role_chart.type = "bar"
+role_chart.title = "Effort by Role (PD)"
+role_chart.style = 11
+role_chart.height = 9
+role_chart.width = 16
+role_chart.gapWidth = 40
+role_n = len(by_role) - 1
+role_cats = Reference(ws2, min_col=1, min_row=by_role_start + 2, max_row=by_role_start + 1 + role_n)
+role_vals = Reference(ws2, min_col=2, min_row=by_role_start + 1, max_row=by_role_start + 1 + role_n)
+role_chart.add_data(role_vals, titles_from_data=True)
+role_chart.set_categories(role_cats)
+role_chart.legend = None
+role_chart.dataLabels = DataLabelList()
+role_chart.dataLabels.showVal = True
+role_chart.dataLabels.showCatName = False
+role_chart.dataLabels.showSerName = False
+role_chart.dataLabels.showLegendKey = False
+role_chart.dataLabels.numFmt = "0.#"
+role_chart.y_axis.delete = False
+role_chart.x_axis.delete = False
+ws0.add_chart(role_chart, f"L{charts_row + 1}")
+
+worktype_chart = PieChart()
+worktype_chart.title = "Effort by Work Type"
+worktype_chart.style = 10
+worktype_chart.height = 9
+worktype_chart.width = 18
+wt_n = len(by_worktype) - 1
+wt_cats = Reference(ws2, min_col=1, min_row=by_worktype_start + 2, max_row=by_worktype_start + 1 + wt_n)
+wt_vals = Reference(ws2, min_col=2, min_row=by_worktype_start + 1, max_row=by_worktype_start + 1 + wt_n)
+worktype_chart.add_data(wt_vals, titles_from_data=True)
+worktype_chart.set_categories(wt_cats)
+worktype_chart.dataLabels = DataLabelList()
+worktype_chart.dataLabels.showPercent = True
+worktype_chart.dataLabels.showCatName = False
+worktype_chart.dataLabels.showSerName = False
+worktype_chart.dataLabels.showVal = False
+worktype_chart.dataLabels.showLegendKey = False
+worktype_chart.dataLabels.numFmt = "0%"
+worktype_chart.legend.position = "b"
+worktype_chart.legend.overlay = False
+ws0.add_chart(worktype_chart, f"W{charts_row + 1}")
+
+autosize(ws0, [16] * 40)
+ws0.column_dimensions["A"].width = 16
+
+# ============================================================
 # Page setup for all sheets
 # ============================================================
-for ws in (ws1, ws2, ws3, ws4, ws5):
+for ws in (ws0, ws1, ws2, ws3, ws4, ws5):
     ws.page_setup.orientation = "landscape"
     ws.page_setup.fitToWidth = 1
     ws.page_setup.fitToHeight = 0

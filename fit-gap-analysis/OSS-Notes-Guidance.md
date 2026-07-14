@@ -1,52 +1,82 @@
 # IFRS 18 — SAP OSS Notes Guidance
 
-**This document does not fabricate SAP OSS Note numbers.** OSS Notes are
-published exclusively on the SAP Support Portal (SAP for Me / SAP ONE
-Support Launchpad), which requires an S-user login and was not directly
-accessible when this analysis was produced. The one note number below
-(3670330) was reported by a third-party blog shared for this project,
-**not independently confirmed on the Support Portal** — treat it as a
-lead to verify, not a confirmed fact, and use the search plan below to
-find anything further.
+The central SAP Note for IFRS 18 has now been confirmed (its full text
+was shared for this project) and is summarized below, along with the
+three edition-specific advisory notes it points to. No note numbers in
+this document are fabricated.
 
-## Note reported by external source (needs verification)
+## Confirmed: SAP Note 3670330 (central note)
 
-| Note | Title (as reported) | Reported scope | Status |
+| Field | Value |
+|---|---|
+| **Note** | [3670330](https://me.sap.com/notes/3670330) |
+| **Title** | Financial Reporting according to IFRS 18 in SAP S/4HANA Cloud, SAP S/4HANA |
+| **Version / Released** | Version 7, released 06.01.2026 |
+| **Component** | FI-GL |
+
+**Summary:** IFRS 18 replaces IAS 1 effective 1 January 2027, requiring a
+new statement-of-profit-or-loss format (defined income/expense
+categories, mandatory subtotals) and mandatory disclosure of
+Management-Defined Performance Measures (MPMs), plus comparative 2026
+figures alongside 2027 statements. Key changes called out by the note
+match what's already captured in
+[`IFRS18-Overview-and-SAP-Roadmap.md`](IFRS18-Overview-and-SAP-Roadmap.md):
+the 5 new P&L categories, the 3 required subtotals, the IAS 7 cash-flow
+reclassification (dividends → Investing, interest paid → Financing,
+interest received → Investing), and the MPM reconciliation/audit
+requirement.
+
+**SAP's stated solution/status (as of the note's latest version):**
+
+- SAP is still evaluating the legal implications and running an active
+  **Customer Engagement Initiative (CEI)** with customers.
+- SAP recommends customers **reach out to their SAP account executive**
+  and/or **raise a Customer Influence Request** under *S/4HANA Public
+  Cloud Finance* or *S/4HANA Private Cloud Finance* to participate.
+- SAP had targeted finalizing a **generic solution approach by December
+  2025**, evaluating flexibility in existing solutions (functional
+  areas, General Ledger, GL valuation run) rather than committing to a
+  single prescriptive fix.
+- Different solution approaches are expected across editions, with
+  **different levels of standardization** (Public Cloud = more
+  pre-delivered/standardized; Private Cloud = more governed flexibility;
+  On-Premise = potentially most configurable) — consistent with what was
+  already captured from the earlier blog summary.
+- **The note is explicitly a living document ("updated regularly")** —
+  re-check it periodically rather than treating this summary as final.
+
+## Confirmed: edition-specific advisory notes (referenced by 3670330)
+
+| Note | Component | Title | Relevance to this landscape |
 |---|---|---|---|
-| [**3670330**](https://me.sap.com/notes/3670330) | SAP's IFRS 18 solution approach | Targeted a formal solution approach by Dec 2025, delivered via the **1SG content package** for **SAP Group Reporting** | **Not yet verified by us** — pull up directly on the Support Portal to confirm content, validity, and whether it's actually applicable to this landscape |
+| [**3694359**](https://me.sap.com/notes/3694359) | FI-GL | How to Adopt IFRS 18 for Financial Reporting in S/4HANA Cloud **Public Edition** | Low — this landscape is not on Public Cloud (it relies on classic transactions/custom Z-development such as `OB58`, `SM30`, `/FIT/...` programs, which Public Cloud's extensibility model does not support in this form) |
+| [**3696338**](https://me.sap.com/notes/3696338) | FI-GL | Advisory Note on IFRS 18 Transition in S/4HANA **Private Cloud, S/4HANA** | **High — read this one first.** Covers S/4HANA Private Cloud and (per the title) S/4HANA generally, i.e. On-Premise too, which matches this landscape's use of classic FI-GL transactions and custom ABAP developments |
+| [**3700153**](https://me.sap.com/notes/3700153) | FI-GL | Advisory Note on IFRS 18 Transition in **SAP ERP** | Low — only relevant if any part of this landscape still runs classic ERP/ECC (not S/4HANA); this project's Fit-Gap Analysis assumes S/4HANA 2023 throughout |
 
-See [`IFRS18-Overview-and-SAP-Roadmap.md`](IFRS18-Overview-and-SAP-Roadmap.md)
-for full context on where this note came from. Important caveat: this
-landscape consolidates via **Oracle HFM**, not **SAP Group Reporting**,
-so the 1SG content package referenced by this note may only partially
-apply here (e.g. general FI-GL/FSV guidance might be relevant to GAP 1,
-but Group-Reporting-specific content would not resolve GAP 2/GAP 3).
-Since the targeted delivery date (Dec 2025) has already passed as of
-this writing, whoever reviews the note should also check for any
-successor/related notes it references.
+**Recommended reading order for this landscape:** 3670330 (central note,
+above) → **3696338** (most relevant edition-specific advisory) → 3694359
+and 3700153 only if parts of the landscape turn out to be on those
+editions.
 
-## Why IFRS 18 may have limited dedicated OSS Note coverage
+## Why IFRS 18 has comparatively light *code-correction* coverage
 
 Unlike standards that change *how transactions are posted* (e.g. IFRS 16
 lease accounting, which required new posting logic, new asset classes,
 and new BAPIs), **IFRS 18 changes how financial statements are
-presented**, not how they are generated. In SAP terms:
+presented**, not how they are generated. Per Note 3670330 itself, SAP's
+own framing is that this is being addressed by evaluating *flexibility
+in existing solutions* (FSVs, functional areas, GL valuation run) rather
+than by a single corrective note — consistent with GAP 1 in
+[`IFRS18-Fit-Gap-Analysis.md`](IFRS18-Fit-Gap-Analysis.md), which relies
+on the already-flexible FSV framework (`OB58`) rather than requiring new
+SAP code.
 
-- The chart of accounts doesn't change.
-- G/L account postings don't change.
-- The Universal Journal (ACDOCA) structure doesn't change.
-- No new document types, posting keys, or transaction types are needed.
+## Further search plan (beyond the 4 notes above)
 
-What changes is the **Financial Statement Version hierarchy** — and
-SAP's FSV framework (transaction OB58) is already fully flexible and
-supports any structure you define (see GAP 1 in
-[`IFRS18-Fit-Gap-Analysis.md`](IFRS18-Fit-Gap-Analysis.md)). This means
-SAP may not need to deliver code corrections for IFRS 18 the way it did
-for standards that changed posting logic.
-
-## How to search the SAP Support Portal
-
-Go to <https://me.sap.com/notes> and search using these combinations:
+Go to <https://me.sap.com/notes> and search using these combinations to
+find any additional notes (e.g. corrections that reference 3670330,
+3694359, 3696338, or 3700153, or newer notes published after this
+summary was captured):
 
 | Search Term | Application Component | Why |
 |---|---|---|
@@ -56,55 +86,28 @@ Go to <https://me.sap.com/notes> and search using these combinations:
 | `IFRS 18` | FI-FIO-GL-KPI | New semantic tags for Operating Profit, Profit before Financing |
 | `IFRS 18` | FIN-CS | Group Reporting / consolidation impacts |
 | `IFRS 18` | CA-GTF-CSC-EDO | Electronic disclosure / XBRL taxonomy updates |
-| `IAS 1 replacement` | FI-GL | IFRS 18 replaces IAS 1 — SAP may reference it this way |
-| `operating profit subtotal` | FI-FIO-GL | New mandatory subtotals |
 
 Also filter by:
 
 - **Software Component:** S4CORE (for S/4HANA core finance)
-- **Release:** SAP S/4HANA 2023 (current landscape release) and SAP
-  S/4HANA 2025
+- **Release:** SAP S/4HANA 2023 (current landscape release) and later
 - **Note Category:** "Correction" and "Legal Change"
-
-## Areas most likely to have relevant SAP-delivered updates
-
-1. **New semantic tags** — for "Operating Profit" and "Profit before
-   Financing and Income Taxes" subtotals, used by the standard KPI
-   framework and Cash Flow Statement apps.
-2. **Cash Flow Statement CDS views** — IFRS 18 reclassifies certain items
-   between operating/investing/financing in the cash flow statement.
-   Check the standard CDS view `2CCFICSHFLINDIFRS` (Cash Flow Statement –
-   Indirect Method for IFRS), already available in S/4HANA 2023, for any
-   related correction notes.
-3. **XBRL/iXBRL taxonomy updates** — if electronic financial reporting
-   (e.g. ESEF in the EU) is in scope, the IFRS taxonomy will be updated
-   for IFRS 18; SAP Disclosure Management or SAP Document and Reporting
-   Compliance may have related notes.
-4. **SAP S/4HANA 2025** — released after IFRS 18 was issued, so it is the
-   most likely release to contain IFRS 18-specific enhancements. If the
-   current landscape is on S/4HANA 2023, any 2025-specific notes would
-   need to be checked for backport eligibility via the note's "Validity"
-   section.
-5. **SAP Group Reporting** — if SAP has added IFRS 18-specific FS items
-   or mapping templates. Not directly applicable to an HFM-based
-   consolidation setup, but worth checking in case future consolidation
-   tooling changes are considered.
 
 ## Recommended action
 
-1. **First**, have someone with SAP Support Portal access (S-user) pull
-   up **Note 3670330** directly at <https://me.sap.com/notes/3670330> to
-   confirm it exists, read its actual content/validity, and check for any
-   notes it references or that reference it back.
-2. **Then**, run the broader searches below and document any additional
-   relevant notes found, including:
-
-- Note number, title, and release date
-- Application component and validity (software component/release)
-- Whether it's a "Correction" or "Legal Change" note
-- Whether it applies directly to the current release or requires
-  backport/Support Package application
-
-If notes exist for S/4HANA 2025 but not for the current release, check
-whether they are backportable via the note's "Validity" section — SAP
-often backports legal-change notes to older supported releases.
+1. **Read Note 3696338 in full** (the Private Cloud/On-Premise advisory)
+   — this is the most relevant of the four confirmed notes for this
+   landscape.
+2. **Consider raising a Customer Influence Request** under *S/4HANA
+   Private Cloud Finance* (per SAP's own recommendation in 3670330), and
+   loop in the account executive — this gives visibility into SAP's
+   solution as it's finalized and a channel to flag this landscape's
+   HFM-based consolidation as a scenario SAP should consider.
+3. **Re-check Note 3670330 periodically** — it's explicitly a living
+   document that SAP updates as the solution approach solidifies.
+4. **Run the broader search plan above** for anything published after
+   this summary, and update this document with findings, including:
+   - Note number, title, and release date
+   - Whether it's a "Correction" or "Legal Change" note
+   - Whether it applies directly to the current release or requires a
+     Support Package / backport

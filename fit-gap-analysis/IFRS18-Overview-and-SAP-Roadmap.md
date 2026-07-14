@@ -1,18 +1,26 @@
 # IFRS 18 Overview & SAP's Roadmap
 
 A plain-language explainer of IFRS 18 and a summary of SAP's stated
-roadmap for supporting it, captured from an external blog post shared
-for this project (Jul 2026). This complements
+roadmap for supporting it. The general IFRS 18 explanation was first
+captured from an external blog post (Jul 2026); the SAP roadmap section
+has since been **updated with the verified text of SAP Note 3670330**
+(v7, released 06.01.2026) and its three edition-specific companion
+notes, shared directly for this project. See
+[`OSS-Notes-Guidance.md`](OSS-Notes-Guidance.md) for the full note
+details. This page complements
 [`IFRS18-Fit-Gap-Analysis.md`](IFRS18-Fit-Gap-Analysis.md) (this
-landscape's specific GAPs) and
-[`OSS-Notes-Guidance.md`](OSS-Notes-Guidance.md) (how to find SAP Notes)
-with general background and the one concrete SAP Note reference
-available so far.
+landscape's specific GAPs).
 
-> **Source note:** this page summarizes third-party/blog content, not an
-> official SAP document reviewed directly on the SAP Support Portal.
-> Treat the OSS Note number below as a **pointer to verify**, not a
-> substitute for pulling it up yourself on <https://me.sap.com/notes>.
+> **Correction vs. the original blog summary:** the earlier version of
+> this page (based only on the blog) stated that SAP's solution would be
+> "delivered via the 1SG content package for SAP Group Reporting." The
+> **actual verified text of Note 3670330 does not say this** — it only
+> says SAP is evaluating flexibility in "functional areas, general
+> ledger, [and the] valuation run in General Ledger," without naming a
+> specific content package or committing to Group Reporting as the
+> delivery vehicle. That earlier claim should be treated as inaccurate
+> or outdated blog speculation, not as confirmed SAP guidance. The
+> sections below now reflect the verified note text only.
 
 ## What is IFRS 18 and why does it matter?
 
@@ -91,50 +99,53 @@ Statement CDS views" item in `OSS-Notes-Guidance.md`).
   IFRS 18 structure when reporting for 2027, i.e. the restructuring must
   be live well before the 2027 year-end.
 
-## SAP's stated roadmap
+## SAP's stated roadmap (verified via Note 3670330)
 
-According to the source blog, SAP is reviewing the impact of IFRS 18
-across:
+**Central note:** [**3670330** — "Financial Reporting according to IFRS
+18 in SAP S/4HANA Cloud, SAP S/4HANA"](https://me.sap.com/notes/3670330)
+(FI-GL, v7, released 06.01.2026). Confirmed content:
 
-- Functional areas
-- General Ledger structure
-- Valuation processes
-- Reporting frameworks in S/4HANA
-- Group Reporting layouts
-- Cash-flow classifications
-- Universal Journal (ACDOCA) extensibility
+- SAP is still **evaluating the legal implications** of IFRS 18 and
+  running an active consultation with customers (the **Customer
+  Engagement Initiative**, CEI).
+- SAP recommends customers **contact their SAP account executive** and/or
+  **raise a Customer Influence Request** under *S/4HANA Public Cloud
+  Finance* or *S/4HANA Private Cloud Finance* to participate.
+- SAP is evaluating flexibility in **existing** solution areas —
+  "functional areas, general ledger, [and the] valuation run in General
+  Ledger" — rather than committing to a specific new content package or
+  delivery mechanism. (The note text does **not** mention "Group
+  Reporting" or a "1SG content package" — see the correction notice at
+  the top of this page.)
+- SAP had targeted finalizing a **generic solution approach by December
+  2025**, once discussions with CEI-enrolled customers concluded.
+- **Different solution approaches, with different levels of
+  standardization, are expected per edition:**
 
-**SAP Note referenced:** [**3670330**](https://me.sap.com/notes/3670330)
-— per the blog, SAP targeted a formal solution approach by **December
-2025**, expected to be delivered as part of IFRS 18 updates for **SAP
-Group Reporting**, via the **1SG content package**.
+| Edition | Expected approach | Companion note |
+|---|---|---|
+| SAP S/4HANA Cloud **Public Edition** | More standardized, pre-delivered content | [3694359](https://me.sap.com/notes/3694359) — How to Adopt IFRS 18 for Financial Reporting in S/4HANA Cloud Public Edition |
+| SAP S/4HANA **Private Cloud** / S/4HANA (On-Premise) | More flexibility, more governance/configuration required | [3696338](https://me.sap.com/notes/3696338) — Advisory Note on IFRS 18 Transition in S/4HANA Private Cloud, S/4HANA |
+| **SAP ERP** (classic ECC, pre-S/4HANA) | Separate advisory, not S/4HANA-specific | [3700153](https://me.sap.com/notes/3700153) — Advisory Note on IFRS 18 Transition in SAP ERP |
 
-The solution approach may differ by edition:
+- **Note 3670330 is explicitly a living document** ("updated regularly
+  as soon as new information...becomes available") — re-check it
+  periodically.
 
-| Edition | Expected approach |
-|---|---|
-| SAP S/4HANA Cloud Public Edition | More standardized, pre-delivered content |
-| SAP S/4HANA Cloud Private Edition | More flexibility with governance |
-| SAP S/4HANA On-Premise | Potentially greater configurability |
-
-**Relevance to this landscape:** this note's scope (1SG content package)
-targets **SAP Group Reporting**. This landscape consolidates through
+**Relevance to this landscape:** based on the transactions and custom
+developments already documented in the Fit-Gap Analysis (`OB58`, `SM30`,
+classic ABAP programs like `/FIT/FI_D_HFM_INTF_001`), this landscape is
+most likely **S/4HANA Private Cloud or On-Premise**, not Public Edition
+and not classic ERP/ECC. That makes **Note 3696338 the most relevant
+companion note to read next** — see
+[`OSS-Notes-Guidance.md`](OSS-Notes-Guidance.md) for the reading order
+and recommended actions. Separately, this landscape consolidates through
 **Oracle Hyperion Financial Management (HFM)** via custom Z-programs
-(see GAP 2/GAP 3 in the Fit-Gap Analysis), not SAP Group Reporting — so
-the 1SG content package itself won't directly resolve GAP 2/GAP 3. It
-may still be worth reviewing for:
-
-- Any general FI-GL/FSV/semantic-tag guidance that also applies outside
-  Group Reporting (relevant to GAP 1).
-- Cash Flow Statement CDS view updates (relevant if the cash-flow
-  reclassification above affects existing reports).
-
-**Action:** since the target date (Dec 2025) has now passed as of this
-writing (mid-2026), someone with SAP Support Portal (S-user) access
-should pull up **Note 3670330** directly, confirm what was actually
-delivered vs. planned, and check for any successor/related notes it
-references. Update [`OSS-Notes-Guidance.md`](OSS-Notes-Guidance.md) with
-the confirmed details once reviewed.
+(GAP 2/GAP 3), which none of these four SAP notes are likely to address
+directly, since they're scoped to SAP's own G/L, functional areas, and
+valuation-run flexibility rather than third-party consolidation
+interfaces — HFM-side alignment will still need to be handled through
+this project's own plan (GAP 3, Phase 5).
 
 ## How to prepare (general guidance, matches this project's plan)
 

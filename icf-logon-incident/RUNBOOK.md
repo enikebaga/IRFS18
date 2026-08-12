@@ -2,31 +2,26 @@
 
 ## Verdict
 
-**Systemwide** ICF System Logon JS handlers broken — including **SAP standard** WD (SOAMANAGER), not only CIM. **Forgot password** (link) works; **Log On / Change** do not (no Network). Likely custom System Logon / password-reset implementation applied **globally**. Not zetVisions app code; not the SOAMANAGER IBC warning.
+**Systemwide** ICF System Logon: **Log On** produces no HTTP request (JS handlers not firing). Affects CIM and SAP standard WD (SOAMANAGER).
+
+**Update from SICF screenshot:** SOAMANAGER uses **Use Global Settings** + **SAP Implementation** (NetWeaver / `SAP_CHROME`) with **no custom ABAP class**. So a custom `CL_ICF_SYSTEM_LOGIN` subclass is **not** configured on that service (global effective UI class looks SAP standard). Next suspects: **Adjust Links and Images** (Forgot-password URLs/logos), **`zv_menu` service-specific** branding, or **`systemloginjs` / `SL_SystemLogin` init failure** → escalate BC-MID-ICF-LGN if pure SAP Implementation still dead.
 
 ## Status
 
-- [x] SICF `systemloginjs` **active**  
-- [x] SICF `/sap/public/bc/ur` **active**  
-- [x] SICF `/sap/public/bc/icons` **active**  
-- [x] SICF `/sap/bc/webdynpro` **active**  
-- [x] Lightspeed OK (200)  
-- [x] Log On → no request  
-- [x] Systemwide (SOAMANAGER + CIM)  
-- [ ] **Next:** SICF → `appl_soap_management` → Error Pages → System Logon → Configuration (note class)  
-- [ ] A/B: custom → SAP standard  
-- [ ] Coordinate with password-reset implementers  
-- [ ] If still broken: `typeof SL_SystemLogin` + HAR → BC-MID-ICF-LGN  
+- [x] SICF `systemloginjs`, `ur`, `icons`, `webdynpro` **active**  
+- [x] Lightspeed OK (200); Log On → no request; systemwide  
+- [x] SOAMANAGER System Logon Configuration: **Global Settings** + **SAP Implementation**, class empty  
+- [ ] **Adjust Links and Images** on that dialog (Forgot-password / images)  
+- [ ] **`zv_menu`** System Logon Configuration (compare — zetVisions branding)  
+- [ ] Browser on SOAMANAGER logon: filter `systemloginjs`; `typeof SL_SystemLogin`  
+- [ ] If still broken with SAP Implementation → **BC-MID-ICF-LGN** (KBA 2900689 / 3423597)
 
-## Basis actions (order)
+## Next clicks (you are in the Configuration popup)
 
-Full click-path: **[STEP-BY-STEP-SICF.md](STEP-BY-STEP-SICF.md)**
-
-1. **SICF** SOAMANAGER + `zv_menu` → Error Pages → System Logon → Config → note **ABAP Class** / Forgot-password URL.  
-2. Find same class on **global** System Logon settings.  
-3. **A/B:** set SAP standard class/layout on one service → hard refresh → test Log On.  
-4. If fixed: revert custom globally; re-implement Forgot password without breaking `SL_SystemLogin` (keep `super` calls / standard script includes).  
-5. If not fixed: F12 `systemloginjs` + Console `typeof SL_SystemLogin` → escalate **BC-MID-ICF-LGN** (KBA 2900689 / 3423597).
+1. Click **Adjust Links and Images** → note any Forgot-password / custom URLs → Cancel back.  
+2. Close Configuration → Cancel service (don’t save yet).  
+3. SICF filter ServiceName `zv_menu` → Error Pages → System Logon → Configuration → note Global vs Service-Specific and class.  
+4. Browser SOAMANAGER logon + F12 (see GLOBAL-CHECKS / STEP-BY-STEP).
 
 ## Ignore for this incident
 

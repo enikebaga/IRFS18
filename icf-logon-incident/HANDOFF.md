@@ -22,6 +22,8 @@ Custom **System Logon** / **Forgot password** implementation (custom ABAP class 
 
 ## Requested actions
 
+Detailed click-path: see **`STEP-BY-STEP-SICF.md`** in this folder.
+
 1. Identify System Logon **ABAP class** and Forgot-password config (SICF System Logon Configuration — global + affected services).  
 2. A/B switch to **SAP standard** System Logon; retest Log On.  
 3. Involve team that implemented password reset; fix/revert customisation.  

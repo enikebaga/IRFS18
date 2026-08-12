@@ -18,6 +18,8 @@ Systemwide **ICF System Logon** JS handlers broken. **Forgot password** (link) w
 
 ## Basis actions (order)
 
+Full click-path: **[STEP-BY-STEP-SICF.md](STEP-BY-STEP-SICF.md)**
+
 1. **SICF** SOAMANAGER + `zv_menu` → Error Pages → System Logon → Config → note **ABAP Class** / Forgot-password URL.  
 2. Find same class on **global** System Logon settings.  
 3. **A/B:** set SAP standard class/layout on one service → hard refresh → test Log On.  

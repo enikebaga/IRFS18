@@ -9,25 +9,20 @@
 ## Status
 
 - [x] Public ICF nodes active; Lightspeed OK; Log On → no request on CIM  
-- [x] SOAMANAGER config: Global + SAP Implementation, class empty  
-- [x] **CIM `cim_hmenu`:** Service-Specific + **Custom Implementation** + **`/ZCO/CL_ICF_CIM_LOGIN`**  
-- [ ] **A/B now:** switch `cim_hmenu` to **SAP Implementation**, Save, test Log On  
-- [ ] Optional: same check on `zv_menu` / `zv_menu_reset`  
-- [ ] SE24 `/ZCO/CL_ICF_CIM_LOGIN` → password-reset / zetVisions owners  
-- [ ] Re-test SOAMANAGER form Log On separately if still needed  
+- [x] SOAMANAGER: Global + SAP Implementation, class empty  
+- [x] **CIM `cim_hmenu`:** Service-Specific + **Custom** + **`/ZCO/CL_ICF_CIM_LOGIN`**  
+- [x] **`ZV_MENU_RESET`:** **Use Global Settings** + **SAP Implementation** (`SAP_CHROME`), class **empty**  
+- [ ] **`zv_menu`** (without `_reset`) Configuration — still needed  
+- [ ] **A/B on `cim_hmenu`:** switch to SAP Implementation → Save → test that CIM URL  
+- [ ] Browser test **`zv_menu_reset` URL**: if Log On dead here too → not explained by `/ZCO/CL_ICF_CIM_LOGIN` alone → `systemloginjs` / BC-MID-ICF-LGN  
+- [ ] SE24 `/ZCO/CL_ICF_CIM_LOGIN` with Dev  
 
-## A/B clicks (you are on the CIM Configuration popup)
+### How to read the two CIM-related services
 
-1. Select **SAP Implementation** (not Custom Implementation).  
-2. Leave Screen/Theme at SAP defaults (e.g. NetWeaver / Signature — whatever appears).  
-3. Confirm with **✓** / Enter / Continue on the dialog.  
-4. On the service screen: **Save**.  
-5. Browser: Incognito → CIM logon URL → Ctrl+F5 → F12 Network clear → Log On.  
-
-| Result | Next |
-|---|---|
-| Log On works (or real auth error) | Cause = `/ZCO/CL_ICF_CIM_LOGIN` → fix/revert with Dev; do **not** put custom back until fixed |
-| Still dead | Put custom back if needed; check `zv_menu`; escalate JS/`systemloginjs` |
+| Service | Logon config | Implication |
+|---|---|---|
+| `cim_hmenu` | Custom `/ZCO/CL_ICF_CIM_LOGIN` | A/B this class for branded CIM logon |
+| `ZV_MENU_RESET` | Global SAP standard | Dead Log On here ≠ that custom class; separate/global JS issue |
 
 ## Ignore for this incident
 

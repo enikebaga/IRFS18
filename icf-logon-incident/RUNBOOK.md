@@ -5,11 +5,16 @@
 - [x] SICF: `/sap/public/bc/icf/systemloginjs` **active**
 - [x] Browser open of  
   `https://vhffecsdci.sap.invite.freudenberg:44300/sap/public/bc/icf/systemloginjs?sap-client=400`  
-  → **blank white page** (not JS source text) — treat as suspicious; confirm with F12 (status / Content-Type / body)
-- [ ] F12 on that blank tab: Status, Content-Type, Response size, first bytes
-- [ ] F12 on real CIM logon page: which `systemloginjs/...` and `lightspeed.js` URLs load, with which status
+  → blank page; DOM empty (`<html><head></head><body></body></html>`)
+- [x] Console 404 = **`favicon.ico` only** (ignore — not systemloginjs)
+- [ ] Network tab: status of the **`systemloginjs` document** itself (not favicon)
+- [ ] F12 on real CIM logon page: `systemloginjs/...` subpath + `lightspeed.js` status
 - [ ] Compare `lightspeed.js` direct URL
 - [ ] A/B: SAP standard System Logon vs zetVisions custom class
+
+### Note on the Console 404
+
+`Failed to load resource: 404` pointing at `:44300/favicon.ico` means only the site icon is missing. It does **not** mean `systemloginjs` returned 404.
 
 ## 1. Capture evidence — do this on the blank tab now
 

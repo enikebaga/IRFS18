@@ -6,19 +6,23 @@
 - [x] Real CIM logon page reproduced (`zv_menu`, zetVisions branding)
 - [x] UR/Lightspeed working — control JS **200** via `lightspeed.js`
 - [x] **Confirmed: click Log On after Network clear → no request at all** (no POST/GET). Button handler never runs.
+- [x] SOAMANAGER opens on same host/client  
+  (`/sap/bc/webdynpro/sap/appl_soap_management?sap-client=400`)  
+  — WS config warning **"Logical system has more than one client IBC"** (Note **2353589**)  
+  — **Not connected** to dead Log On button (SOA/IBC ≠ System Logon JS)
 - [ ] Network on **full reload**: filter `systemloginjs` — any row? status?
-- [ ] Console (Errors on) after reload — 2 messages
-- [ ] Elements: Inspect **Log On** — tag / `onclick` / surrounding `<form>`
-- [ ] Console eval: `typeof SL_SystemLogin` (or similar)
+- [ ] Console: `typeof SL_SystemLogin`
 - [ ] **A/B high priority:** SICF System Logon → SAP standard class (disable zetVisions custom)
 
 ### Confirmed symptom
 
 Client-side only: UI paints, UR loads, but **Log On does not call the server**. Not a password/auth/SAML problem at this stage.
 
-### Note on the earlier Console 404
+### SOAMANAGER “severe inconsistencies” — unrelated
 
-`favicon.ico` 404 is irrelevant.
+That warning is about **Web Service / IBC** configuration (duplicate client IBC for logical system CSD/400). It does not drive ICF System Logon button handlers. Fix later via Note **2353589** if SOA is needed; ignore for the CIM Log On incident.
+
+If you reached SOAMANAGER via a **form** Log On on the same host, that further isolates the defect to the **zetVisions branded** System Logon on `/zco/zv_menu` (custom class/layout), not a global `systemloginjs` outage.
 
 ## 1. Next checks (Log On confirmed dead — no Network)
 

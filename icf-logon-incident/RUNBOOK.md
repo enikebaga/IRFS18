@@ -2,26 +2,32 @@
 
 ## Verdict
 
-**Systemwide** ICF System Logon: **Log On** produces no HTTP request (JS handlers not firing). Affects CIM and SAP standard WD (SOAMANAGER).
+**CIM:** Service-specific **Custom Implementation** with ABAP class **`/ZCO/CL_ICF_CIM_LOGIN`** (`cim_hmenu`). That is the primary suspect for CIM Log On / Change / Forgot-password behaviour.
 
-**Update from SICF screenshot:** SOAMANAGER uses **Use Global Settings** + **SAP Implementation** (NetWeaver / `SAP_CHROME`) with **no custom ABAP class**. So a custom `CL_ICF_SYSTEM_LOGIN` subclass is **not** configured on that service (global effective UI class looks SAP standard). Next suspects: **Adjust Links and Images** (Forgot-password URLs/logos), **`zv_menu` service-specific** branding, or **`systemloginjs` / `SL_SystemLogin` init failure** → escalate BC-MID-ICF-LGN if pure SAP Implementation still dead.
+**SOAMANAGER:** Earlier screenshot showed **Global Settings** + **SAP Implementation** (no custom class). If form Log On is also dead there, that is a **second** track (systemloginjs / BC-MID-ICF-LGN) — the `/ZCO/` class does not apply to SOAMANAGER.
 
 ## Status
 
-- [x] SICF `systemloginjs`, `ur`, `icons`, `webdynpro` **active**  
-- [x] Lightspeed OK (200); Log On → no request; systemwide  
-- [x] SOAMANAGER System Logon Configuration: **Global Settings** + **SAP Implementation**, class empty  
-- [ ] **Adjust Links and Images** on that dialog (Forgot-password / images)  
-- [ ] **`zv_menu`** System Logon Configuration (compare — zetVisions branding)  
-- [ ] Browser on SOAMANAGER logon: filter `systemloginjs`; `typeof SL_SystemLogin`  
-- [ ] If still broken with SAP Implementation → **BC-MID-ICF-LGN** (KBA 2900689 / 3423597)
+- [x] Public ICF nodes active; Lightspeed OK; Log On → no request on CIM  
+- [x] SOAMANAGER config: Global + SAP Implementation, class empty  
+- [x] **CIM `cim_hmenu`:** Service-Specific + **Custom Implementation** + **`/ZCO/CL_ICF_CIM_LOGIN`**  
+- [ ] **A/B now:** switch `cim_hmenu` to **SAP Implementation**, Save, test Log On  
+- [ ] Optional: same check on `zv_menu` / `zv_menu_reset`  
+- [ ] SE24 `/ZCO/CL_ICF_CIM_LOGIN` → password-reset / zetVisions owners  
+- [ ] Re-test SOAMANAGER form Log On separately if still needed  
 
-## Next clicks (you are in the Configuration popup)
+## A/B clicks (you are on the CIM Configuration popup)
 
-1. Click **Adjust Links and Images** → note any Forgot-password / custom URLs → Cancel back.  
-2. Close Configuration → Cancel service (don’t save yet).  
-3. SICF filter ServiceName `zv_menu` → Error Pages → System Logon → Configuration → note Global vs Service-Specific and class.  
-4. Browser SOAMANAGER logon + F12 (see GLOBAL-CHECKS / STEP-BY-STEP).
+1. Select **SAP Implementation** (not Custom Implementation).  
+2. Leave Screen/Theme at SAP defaults (e.g. NetWeaver / Signature — whatever appears).  
+3. Confirm with **✓** / Enter / Continue on the dialog.  
+4. On the service screen: **Save**.  
+5. Browser: Incognito → CIM logon URL → Ctrl+F5 → F12 Network clear → Log On.  
+
+| Result | Next |
+|---|---|
+| Log On works (or real auth error) | Cause = `/ZCO/CL_ICF_CIM_LOGIN` → fix/revert with Dev; do **not** put custom back until fixed |
+| Still dead | Put custom back if needed; check `zv_menu`; escalate JS/`systemloginjs` |
 
 ## Ignore for this incident
 

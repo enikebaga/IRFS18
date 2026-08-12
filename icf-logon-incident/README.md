@@ -8,14 +8,19 @@
 
 This is almost certainly a **client-side JavaScript failure on the ICF System Logon page**, not a Web Dynpro application bug and not a wrong username/password. The HTML/branding renders, but the script that wires the **Log On** / **Change** buttons never becomes active — so no (or only a hollow) submit happens, with no server-side error.
 
-### Status update (SICF check)
+### Status update (SICF + browser)
 
-`/sap/public/bc/icf/systemloginjs` is **active** in SICF (path `default_host → sap → public → bc → icf → systemloginjs`, black/blue = active). That rules out the “forgotten inactive node” variant of KBA **2900689**, but **does not prove the browser receives working JS** via the user URL (`…:44300` / Web Dispatcher). Next proof is F12 Network / direct URL test (below).
+| Check | Result |
+|---|---|
+| SICF `/sap/public/bc/icf/systemloginjs` | **Active** (inactive-node theory ruled out) |
+| Browser `https://vhffecsdci.sap.invite.freudenberg:44300/sap/public/bc/icf/systemloginjs?sap-client=400` | **Blank white page** — not the expected JS source listing |
+
+Blank at the **service root** is suspicious and matches the symptom family in KBA **3423597** / **3267156**, but is not final until F12 shows Status / Content-Type / body. The logon page usually calls a **subpath** under `systemloginjs/…`; that request’s status is decisive.
 
 **Remaining suspects (in order):**
 
-1. Web Dispatcher / RISE path returns **403/HTML logon trap** for `systemloginjs` or UR scripts even though SICF is active  
-2. Unified Rendering JS broken (`lightspeed.js` / `domainrelax.js` → 500 or HTML-as-JS)  
+1. `systemloginjs` returns empty / wrong Content-Type / 403 via Web Dispatcher (confirm with F12 on the blank tab)  
+2. Unified Rendering JS broken (`lightspeed.js`)  
 3. Custom zetVisions System Logon class breaks button handlers while SAP standard works
 
 ---

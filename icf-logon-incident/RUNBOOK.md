@@ -2,44 +2,59 @@
 
 ## Status
 
-- [x] SICF: `/sap/public/bc/icf/systemloginjs` **active** (inactive-node theory ruled out)
-- [ ] Browser proves JS actually loads with **HTTP 200 + `application/javascript`** (not HTML)
-- [ ] Console clean on logon page
+- [x] SICF: `/sap/public/bc/icf/systemloginjs` **active**
+- [x] Browser open of  
+  `https://vhffecsdci.sap.invite.freudenberg:44300/sap/public/bc/icf/systemloginjs?sap-client=400`  
+  → **blank white page** (not JS source text) — treat as suspicious; confirm with F12 (status / Content-Type / body)
+- [ ] F12 on that blank tab: Status, Content-Type, Response size, first bytes
+- [ ] F12 on real CIM logon page: which `systemloginjs/...` and `lightspeed.js` URLs load, with which status
+- [ ] Compare `lightspeed.js` direct URL
 - [ ] A/B: SAP standard System Logon vs zetVisions custom class
 
-## 1. Capture evidence (2 min) — do this next
+## 1. Capture evidence — do this on the blank tab now
 
-On the **same** failing URL (`https://<host>.sap.invite.freudenberg:44300/...`), F12 → Network + Console:
+On the blank `systemloginjs` tab, press **F12**:
 
-- [ ] Reload logon page; filter `systemloginjs`, `lightspeed`, `domainrelax`
-- [ ] For each script: Status = ?  Content-Type = ?  Response starts with `function`/`var` or with `<html`?
-- [ ] Console errors (`UCF_LS`, `ur_relax`, `Unexpected token '<'`, `SL_SystemLogin`)
-- [ ] Click Log On — any POST at all?
+1. **Network** → click the document request for `systemloginjs`
+   - Status code (200 / 403 / 404 / 500 / 302?)
+   - **Content-Type** (`application/javascript` / `text/javascript` / `text/html` / empty?)
+   - **Size** (0 bytes vs several KB)
+2. **Response** / **View Page Source** — empty, HTML, or JS (`function`, `SL_SystemLogin`, …)?
+3. Also open:
+   ```text
+   https://vhffecsdci.sap.invite.freudenberg:44300/sap/public/bc/ur/nw7/js/lightspeed.js
+   ```
+   Healthy = long JS source. Blank/HTML/error = UR path also broken.
 
-Also open directly in the browser address bar:
+4. Open the **real** CIM logon URL, F12 → Network, filter `systemloginjs` — note the **full** path (often `/sap/public/bc/icf/systemloginjs/<…>/<…>`) and its status. Root URL blank ≠ conclusive; the subpath used by the logon page is decisive (see KBA 3267156).
 
-```text
-https://<host>.sap.invite.freudenberg:44300/sap/public/bc/icf/systemloginjs
-https://<host>.sap.invite.freudenberg:44300/sap/public/bc/ur/nw7/js/lightspeed.js
-```
-
-- Pass = raw JS text  
-- Fail = logon HTML, 403, 404, 500, or blank
+| Finding | Action |
+|---|---|
+| 403 / HTML body | RISE Web Dispatcher / auth on `/sap/public/bc/icf/` |
+| 200 + **0 bytes** / empty | Handler/`CL_ICF_SYSTEM_LOGIN_JS` content issue — Basis + BC-MID-ICF-LGN |
+| 200 + `text/html` | Wrong response / rewrite — WD or ICF |
+| 200 + real JS but logon still dead | Check `lightspeed.js` + custom logon class A/B |
 
 ## 2. Decision tree (post–SICF-active)
 
 ```text
-Via :44300, systemloginjs / lightspeed → 403 / 404 / HTML logon page?
-  YES → RISE Web Dispatcher / path rewrite ticket (/sap/public/bc/icf|ur)
-        Compare same URLs on direct app-server host if accessible
+Via :44300, systemloginjs (root) → blank white page  [OBSERVED]
+  → Read F12 Status + Content-Type + body (mandatory next step)
+
+  Subpath on real logon page, or lightspeed → 403 / 404 / HTML?
+  YES → RISE Web Dispatcher / path rewrite (/sap/public/bc/icf|ur)
 
   → 500 on *.js?
   YES → SE38 WDG_MAINTAIN_UR_MIMES (force deploy); check /sap/public/bc/ur active
 
-  → 200 + real JS, but Console still errors / buttons dead?
+  → 200 + empty body on systemloginjs?
+  YES → SICF double-click service: Handler List = CL_ICF_SYSTEM_LOGIN_JS?
+        SE24: class exists? Note 3534996 if missing
+        Escalate BC-MID-ICF-LGN with HAR
+
+  → 200 + real JS, buttons still dead?
   YES → SICF on zv_menu / zv_menu_reset:
         Error Pages → System Logon → switch custom class to SAP standard
-        Works? → zetVisions CL_ICF_SYSTEM_LOGIN subclass / branding JS
 ```
 
 ## 4. Retest

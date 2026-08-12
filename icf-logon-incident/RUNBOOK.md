@@ -3,16 +3,16 @@
 ## Status
 
 - [x] SICF: `/sap/public/bc/icf/systemloginjs` **active**
-- [x] Browser open of  
-  `https://vhffecsdci.sap.invite.freudenberg:44300/sap/public/bc/icf/systemloginjs?sap-client=400`  
-  → blank page; DOM empty (`<html><head></head><body></body></html>`)
-- [x] Console 404 = **`favicon.ico` only** (ignore — not systemloginjs)
-- [ ] Network tab: status of the **`systemloginjs` document** itself (not favicon)
-- [ ] F12 on real CIM logon page: `systemloginjs/...` subpath + `lightspeed.js` status
-- [ ] Compare `lightspeed.js` direct URL
+- [x] Real CIM logon page reproduced:  
+  `https://vhffecsdci.sap.invite.freudenberg:44300/sap/bc/webdynpro/zco/zv_menu?sap-wd-client=400&sap-language=EN`  
+  — zetVisions branded System Logon; Log On / Change Password present; page HTML renders  
+  — DOM shows Lightspeed/UR `2.42.1` (`data-sap-ls-system-runtimeversion`), `UCF_System` / `/sap/public/bc/ur/nw7`  
+  — DevTools reports **2 Console errors** (red badge) — **not yet read**
+- [ ] Open **Console** tab → copy the 2 error messages (and any linked script URL)
+- [ ] Network: filter `systemloginjs` / `lightspeed` / `domainrelax` / failed (red) rows
 - [ ] A/B: SAP standard System Logon vs zetVisions custom class
 
-### Note on the Console 404
+### Note on the earlier Console 404
 
 `Failed to load resource: 404` pointing at `:44300/favicon.ico` means only the site icon is missing. It does **not** mean `systemloginjs` returned 404.
 

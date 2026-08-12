@@ -6,15 +6,17 @@
 
 ## Status
 
-- [x] SICF `systemloginjs` active  
+- [x] SICF `systemloginjs` **active**  
+- [x] SICF `/sap/public/bc/ur` **active**  
+- [x] SICF `/sap/public/bc/icons` **active**  
+- [x] SICF `/sap/bc/webdynpro` **active**  
 - [x] Lightspeed OK (200)  
 - [x] Log On → no request  
 - [x] Systemwide (SOAMANAGER + CIM)  
-- [x] Forgot password works (per Basis/Dev)  
-- [ ] Identify custom System Logon ABAP class (global + service)  
+- [ ] **Next:** SICF → `appl_soap_management` → Error Pages → System Logon → Configuration (note class)  
 - [ ] A/B: custom → SAP standard  
 - [ ] Coordinate with password-reset implementers  
-- [ ] If still broken: `typeof SL_SystemLogin` + `systemloginjs` Network + BC-MID-ICF-LGN  
+- [ ] If still broken: `typeof SL_SystemLogin` + HAR → BC-MID-ICF-LGN  
 
 ## Basis actions (order)
 

@@ -14,8 +14,20 @@
 - [x] **`ZV_MENU`:** Service-Specific + **Custom** + **`/ZCO/CL_ICF_CIM_LOGIN`** (client 400 / EN) — **same class**  
 - [x] **`ZV_MENU_RESET`:** Global + SAP Implementation, class empty  
 - [ ] **A/B now on this `ZV_MENU` dialog:** SAP Implementation → ✓ → Save → test `zv_menu` URL  
-- [ ] SE24 `/ZCO/CL_ICF_CIM_LOGIN` with Dev if A/B fixes Log On  
-- [ ] `zv_menu_reset` / SOAMANAGER still dead after CIM fix → separate BC-MID-ICF-LGN track  
+- [x] SE24: **`/ZCO/CL_ICF_CIM_LOGIN`** exists, **Active** (CSD client 400)  
+- [ ] SE24 Display: superclass = `CL_ICF_SYSTEM_LOGIN`? redefined methods? Forgot-password / HTML / JS?  
+- [ ] **A/B on `ZV_MENU`:** SAP Implementation → Save → test Log On  
+- [ ] If A/B fixes → Dev owns this class; leave SAP Implementation until fixed  
+- [ ] `zv_menu_reset` / SOAMANAGER still dead → BC-MID-ICF-LGN track  
+
+### SE24 — what to inspect in `/ZCO/CL_ICF_CIM_LOGIN`
+
+1. Click **Display**.  
+2. Tab **Properties** / inheritance: superclass should be **`CL_ICF_SYSTEM_LOGIN`** (or SAP login base).  
+3. Tab **Methods**: note methods that are **redefined** (not only inherited). Especially anything with HTML, script, link, password, logon, render.  
+4. Open redefined methods → look for Forgot-password URL, custom JS, missing `super->…` calls.  
+5. **Utilities → Versions** (or Ctrl+F5 version): last change date / transport / author → who owns Forgot-password.  
+6. Do **not** change the class yet — first finish SICF A/B on `ZV_MENU`.  
 
 ### Service map
 

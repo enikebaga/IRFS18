@@ -1,188 +1,111 @@
 # ICF / Web Dynpro ABAP — Unresponsive Log On / Change Password
 
-**Incident:** CIM/CDB (zetVisions) web logon — Log On and Change Password buttons do nothing  
+**Incident:** Systemwide web System Logon — Log On / Change Password do nothing; “Forgot your password?” still works  
 **System:** SAP S/4HANA 2023 · SAP_BASIS 7.58 · SAP_UI 7.58 SP2 (SAPK-75802INSAPUI) · RISE (SAP-managed Web Dispatcher)  
-**Apps:** `/sap/bc/webdynpro/zco/` — `cim_hmenu`, `zv_menu`, `zv_main`, `zv_menu_reset`
+**Seen on:** zetVisions CIM (`/sap/bc/webdynpro/zco/zv_menu`, …) **and** SAP standard SOAMANAGER (`/sap/bc/webdynpro/sap/appl_soap_management`)
 
 ## Verdict
 
-This is almost certainly a **client-side JavaScript failure on the ICF System Logon page**, not a Web Dynpro application bug and not a wrong username/password. The HTML/branding renders, but the script that wires the **Log On** / **Change** buttons never becomes active — so no (or only a hollow) submit happens, with no server-side error.
+**Systemwide ICF System Logon defect (client-side):** the HTML page renders, Unified Rendering / Lightspeed loads, but the JavaScript that must handle **Log On** / **Change Password** never runs — Network shows **no request** after click.
 
-### Status update (evidence so far)
+This is **not** a zetVisions WDA application bug, **not** wrong passwords, and **not** the SOAMANAGER “client IBC” warning (Note 2353589).
+
+Colleagues’ observation fits the evidence well:
+
+| Control | Needs | Behaviour |
+|---|---|---|
+| **Forgot your password?** | Usually a plain hyperlink / navigation to a reset app | **Works** |
+| **Log On** / **Change Password** | System Logon JS (`SL_SystemLogin` / `systemloginjs`) submit handlers | **Dead — no Network** |
+
+That pattern strongly suggests a **custom System Logon / password-reset implementation** (custom `CL_ICF_SYSTEM_LOGIN` subclass, custom HTML/JS, or global System Logon settings) that added the Forgot-password link but broke or omitted the standard Log On wiring — applied **globally**, hence SOAMANAGER is affected too.
+
+---
+
+## Evidence gathered
 
 | Check | Result |
 |---|---|
 | SICF `/sap/public/bc/icf/systemloginjs` | **Active** |
-| Direct open of `…/systemloginjs?sap-client=400` | Blank page (service root; logon-page subpath still TBD) |
-| CIM logon page HTML / branding | Renders (zetVisions) |
-| `lightspeed.js` + control JS | **OK** (200) — UR not globally broken |
-| Click **Log On** with Network cleared | **No request at all** — click handler never fires |
-
-**Remaining suspects (revised order):**
-
-1. System Logon JS (`systemloginjs` / `SL_SystemLogin`) not loaded or not initialized on this branded page  
-2. Custom zetVisions `CL_ICF_SYSTEM_LOGIN` subclass / layout breaks button wiring (A/B vs SAP standard)  
-3. Less likely now: UR MIME / Web Dispatcher blocking all public JS (disproven by lightspeed 200s)
+| CIM logon page | Renders (zetVisions branding) |
+| `lightspeed.js` + control JS | **OK** (HTTP 200) |
+| Click Log On (Network cleared) | **No POST/GET at all** |
+| Scope | **Systemwide** — SAP standard SOAMANAGER form logon also broken |
+| Forgot password link | **Works** (per Basis/Dev) |
+| SOAMANAGER IBC inconsistency | Unrelated SOA config (Note 2353589) |
 
 ---
 
-## Why this matches your symptoms
+## What Basis / password-reset owners should do
 
-| Observation | Interpretation |
+### 1. Find the global System Logon customisation (primary)
+
+1. **SICF** → service `/sap/bc/webdynpro/sap/appl_soap_management` (and `/zco/zv_menu`) → **Error Pages** → **Logon Errors** → **System Logon** → **Configuration**.
+2. Note:
+   - **ABAP Class** (anything other than SAP standard / empty → custom)
+   - Layout / links / “Forgot password” URL
+   - Global vs service-specific settings
+3. Also check **global** System Logon defaults (SICF → right-click `default_host` / SAP help “System Logon” global configuration; table/view usage varies by release — look for the same custom class name systemwide).
+4. **SE24**: open that custom class (subclass of `CL_ICF_SYSTEM_LOGIN` or related). Search for password-reset / forgot-password changes, redefined HTML/JS methods, missing `super→` calls.
+
+### 2. Immediate A/B (proves the theory in minutes)
+
+On **one** affected service (e.g. SOAMANAGER or `zv_menu`):
+
+1. Switch System Logon from **custom class → SAP standard** (remove custom class / use SAP default layout).
+2. Hard-refresh browser (Disable cache).
+3. Retry **Log On**.
+
+| Result | Conclusion |
 |---|---|
-| Page and branding render correctly | HTML/CSS and custom System Logon layout load; problem is not “service down” |
-| Log On click → no navigation, no error, **no request** | Button click handler never attached (JS missing / failed) |
-| Change Password → fields clear / page reloads, no error | Default form navigation without System Logon JS setting `sap-system-login-*` fields |
-| Same after logoff on `zv_menu_reset` | Shared ICF System Logon infrastructure, not one WDA component |
-| Multiple users, Edge + Chrome | Server/config issue, not a local browser profile |
-| SAML (`Z_SAML_CSQ`) + SPNego also present | Unrelated to the dead button; form logon still needs `systemloginjs` |
+| Log On works again | Custom System Logon / Forgot-password implementation is the cause — revert globally, then re-add Forgot-password safely |
+| Log On still dead | Keep investigating `systemloginjs` load / Notes below — still Basis **BC-MID-ICF-LGN** |
 
-Custom WDA under `/ZCO/` only chooses **System Logon** as the ICF error/logon page. The dead buttons live in the **ICF System Logon** framework (`CL_ICF_SYSTEM_LOGIN` / branded subclass), not in `zv_menu` coding.
+Repeat for global default if service-level A/B succeeds only on the edited service.
+
+### 3. Browser proof to attach to the ticket
+
+On the broken logon page (F12):
+
+1. Network → **Disable cache** → filter `systemloginjs` → reload → screenshot status/rows.
+2. Console: `typeof SL_SystemLogin` → expect `"undefined"` if handlers never init.
+3. Confirm again: clear Network → Log On → **zero** new requests.
+4. Optional HAR export.
+
+### 4. If A/B does not restore Log On
+
+- Confirm `systemloginjs` subpath on the logon page (not only service root) returns real JS.
+- KBA **2900689** / **3423597** / **3272754**; component **BC-MID-ICF-LGN**.
+- RISE Web Dispatcher only if public JS returns 403/HTML (less likely now that lightspeed 200s).
+
+### 5. Do not chase
+
+- SOAMANAGER “Logical system has more than one client IBC” — separate; Note **2353589**.
+- zetVisions application code under `/ZCO/` — ruled out by SOAMANAGER failure.
+- SAML/SPNego alone — would redirect or error, not silent dead buttons with working Forgot-password link.
 
 ---
 
-## Confirm in 5 minutes (browser)
-
-Open the failing URL, press **F12**, then:
-
-1. **Network** — reload the logon page; filter for `systemloginjs`, `lightspeed`, `domainrelax`, `nw07`.
-2. Click **Log On** once with dummy credentials; confirm whether **any** POST/GET is sent.
-3. **Console** — look for:
-   - `UCF_LS is not defined`
-   - `ur_relax is not defined`
-   - `SL_SystemLogin` / `ReferenceError`
-   - `Unexpected token '<'` on a `.js` URL (HTML/login page returned instead of JS)
-
-**Expected smoking gun:**
+## Handoff summary (paste to ticket)
 
 ```text
-GET /sap/public/bc/icf/systemloginjs/…   → 403 Forbidden  or  404 Not Found
+Systemwide ICF System Logon: Log On / Change Password do nothing (no HTTP
+request). Forgot password link works. Affects custom CIM (/zco/zv_menu) and
+SAP standard SOAMANAGER. Lightspeed/UR JS loads (200). SICF systemloginjs
+active. Suspected cause: custom System Logon class / Forgot-password
+implementation breaking SL_SystemLogin handlers. Please identify global
+System Logon ABAP class, A/B to SAP standard, coordinate with password-reset
+implementers. Component BC-MID-ICF-LGN if standard still fails. Evidence:
+F12 Network (no POST on Log On), lightspeed 200s, SICF active screenshot.
 ```
-
-or
-
-```text
-GET /sap/public/bc/ur/nw7/js/lightspeed.js → 403 / 404 / 500
-```
-
-If those URLs return **200** with real JavaScript and Console is clean, skip to [Secondary causes](#secondary-causes).
-
----
-
-## Fix path A — Activate `systemloginjs` (most common)
-
-**Status:** SICF node is already **active** — skip activation; still verify **browser reachability** via `:44300` (Web Dispatcher).
-
-**Refs:** KBA [2900689](https://userapps.support.sap.com/sap/support/knowledge/en/2900689), [3423597](https://userapps.support.sap.com/sap/support/knowledge/en/3423597), [3194434](https://userapps.support.sap.com/sap/support/knowledge/en/3194434)
-
-1. ~~Transaction **SICF** → activate `systemloginjs`~~ — **done / confirmed active**.
-2. Also confirm related public nodes are active:
-   - `/sap/public/bc/ur`
-   - `/sap/public/bc/icons`
-   - `/sap/public/bc/icf` (parent)
-3. From a workstation that uses the failing URL, open:
-   - `https://<host>:44300/sap/public/bc/icf/systemloginjs`
-   - `https://<host>:44300/sap/public/bc/ur/nw7/js/lightspeed.js`  
-   Expect raw JavaScript. If you get HTML logon, 403, or 500 → not truly reachable from the client path.
-4. On RISE, if SICF is active but the Web Dispatcher still returns 403/HTML, open an **SAP RISE / BTP Ops** ticket to allow `/sap/public/bc/icf/` (and `/sap/public/bc/ur/`) through the managed Web Dispatcher.
-
----
-
-## Fix path B — Unified Rendering MIME / JS 500s
-
-**Refs:** KBA [3272754](https://userapps.support.sap.com/sap/support/knowledge/en/3272754), [3290983](https://userapps.support.sap.com/sap/support/knowledge/en/3290983)
-
-If Network shows **500** on `lightspeed.js` / `domainrelax.js`, or Console has `UCF_LS` / `ur_relax` undefined:
-
-1. SICF: confirm `/sap/public/bc/ur` is active.
-2. SE38: run **`WDG_MAINTAIN_UR_MIMES`** → Deploy / Force MIME Deployment (basis change window).
-3. Recheck UR version / notes per **2090746** (Unified Rendering).
-4. Retest logon page after MIME deploy + browser cache clear.
-
----
-
-## Fix path C — Web Dispatcher routing (RISE)
-
-**Ref:** [SAP Community — WDA Log On dead behind Web Dispatcher](https://community.sap.com/t5/technology-q-a/web-dynpro-application-log-on-button-is-not-working/qaq-p/586008)
-
-If the same service works when called **bypassing** the Web Dispatcher (direct app-server URL from a jump host) but fails via  
-`https://<host>.sap.invite.freudenberg:44300/...`:
-
-- Public UR/ICF scripts are being routed to the wrong backend (or blocked).
-- Ask SAP-managed WD to ensure backend SRCURL includes at least:
-  - `/sap/bc/webdynpro/`
-  - `/sap/public/` (or explicitly `/sap/public/bc/ur/` and `/sap/public/bc/icf/`)
-- Prefer `wdisp/system_conflict_resolution = BEST_MATCH` when multiple systems share prefixes.
-- Clear browser cache after WD change (stale wrong JS is a frequent “still broken” trap).
-
-FQDN is already used in your URL pattern — good (IP-only logon cookie issues per KBA **2063490** are unlikely here).
-
----
-
-## Secondary causes
-
-Check these only if Network shows `systemloginjs` and UR JS as **200** and Console is clean:
-
-1. **Custom System Logon class** (zetVisions branding)  
-   In SICF on the WDA service → Error Pages → System Logon → Settings: note the custom class (subclass of `CL_ICF_SYSTEM_LOGIN`). Temporarily switch to SAP standard layout/class. If buttons work again, the custom class/JS/HTML is breaking handlers — fix with vendor or revert branding.
-
-2. **Logon procedure mix (SAML / SPNego / Fields)**  
-   For `zv_menu_reset` (“without SSO”), Logon Data should allow **Logon Through HTTP Fields** (and not only SAML/SPNego). Wrong procedure usually yields a **visible** error or SSO redirect, not a fully dead button — lower priority given your symptom.
-
-3. **Initial password / `icf/reject_expired_passwd`**  
-   KBA **2567768** covers wrong behaviour on password change when that parameter is `1`, but typically with an error message, not a silent clear. Still verify RZ11 if only the Change screen misbehaves after Log On is fixed.
-
-4. **UI / ICF notes for 7.58**  
-   Related corrections referenced from newer KBAs (e.g. 3463884, 3538273, 3597092) — apply if SP level / note analyzer shows them missing. Less likely than inactive `systemloginjs` when **no** request is fired.
-
----
-
-## SICF checklist for `/sap/bc/webdynpro/zco/*`
-
-| Check | Where |
-|---|---|
-| Service active | `cim_hmenu`, `zv_menu`, `zv_main`, `zv_menu_reset` |
-| Error Pages → Logon | **System Logon** (not a broken explicit HTML page) |
-| System Logon settings | Global vs service-specific; custom class name documented |
-| Logon Data (`zv_menu_reset`) | Alternative logon includes **HTTP Fields** for manual logon after logoff |
-| Client | `sap-client=400` consistent with service / `login/system_client` |
-
----
-
-## Suggested test matrix (after fix)
-
-1. Incognito Edge + Chrome → `zv_menu?sap-client=400&sap-language=EN` → Log On with known user.
-2. User with initial password → Change Password completes and continues into app.
-3. Log off → land on `zv_menu_reset` → Log On again.
-4. Optional: WEBGUI or SOAMANAGER System Logon — if those were also dead, confirms global ICF/UR issue; if only `/zco/` fails after A/B/C, focus on custom logon class for that service.
 
 ---
 
 ## SAP references
 
-| Note / KBA | Relevance |
+| Note / KBA | Use |
 |---|---|
-| [2900689](https://userapps.support.sap.com/sap/support/knowledge/en/2900689) | Log On does nothing; 403/404 on `systemloginjs` |
-| [3423597](https://userapps.support.sap.com/sap/support/knowledge/en/3423597) | Logon visible, button no response; `/sap/public/bc/icf/systemloginjs` |
-| [3194434](https://userapps.support.sap.com/sap/support/knowledge/en/3194434) | 403 on `systemloginjs` |
-| [3272754](https://userapps.support.sap.com/sap/support/knowledge/en/3272754) | Unresponsive / broken System Logon; UR MIME / `lightspeed.js` |
-| [3290983](https://userapps.support.sap.com/sap/support/knowledge/en/3290983) | JS parse errors → `UCF_LS` / `ur_relax` undefined |
-| [2063490](https://userapps.support.sap.com/sap/support/knowledge/en/2063490) | IP vs FQDN cookie issues (probably N/A here) |
-| Component | **BC-MID-ICF-LGN** (ICF System Login) |
-
----
-
-## What this is not
-
-- Not a defect in Web Dynpro component logic of `zv_menu` / `zv_main`.
-- Not “wrong password” (that would show a System Logon error text).
-- Not primarily a SAML IdP outage (form buttons would still post; SSO would redirect).
-
----
-
-## Recommended next action for the Basis / RISE team
-
-1. Reproduce with F12 → capture Network status for `systemloginjs` and `lightspeed.js`.  
-2. If 403/404 → activate `/sap/public/bc/icf/systemloginjs` (and parents) in SICF; if already active → escalate to SAP-managed Web Dispatcher allow-list for `/sap/public/bc/icf/` and `/sap/public/bc/ur/`.  
-3. If 500 on UR JS → `WDG_MAINTAIN_UR_MIMES`.  
-4. If all 200 → A/B test SAP standard System Logon vs zetVisions custom class.
+| [2900689](https://userapps.support.sap.com/sap/support/knowledge/en/2900689) | Log On does nothing; `systemloginjs` |
+| [3423597](https://userapps.support.sap.com/sap/support/knowledge/en/3423597) | Logon button no response |
+| [3272754](https://userapps.support.sap.com/sap/support/knowledge/en/3272754) | System Logon unresponsive (UR MIME) |
+| [2353589](https://userapps.support.sap.com/sap/support/knowledge/en/2353589) | SOAMANAGER IBC inconsistency — **unrelated** |
+| Component | **BC-MID-ICF-LGN** |

@@ -8,20 +8,21 @@
 
 This is almost certainly a **client-side JavaScript failure on the ICF System Logon page**, not a Web Dynpro application bug and not a wrong username/password. The HTML/branding renders, but the script that wires the **Log On** / **Change** buttons never becomes active — so no (or only a hollow) submit happens, with no server-side error.
 
-### Status update (SICF + browser)
+### Status update (evidence so far)
 
 | Check | Result |
 |---|---|
-| SICF `/sap/public/bc/icf/systemloginjs` | **Active** (inactive-node theory ruled out) |
-| Browser `https://vhffecsdci.sap.invite.freudenberg:44300/sap/public/bc/icf/systemloginjs?sap-client=400` | **Blank white page** — not the expected JS source listing |
+| SICF `/sap/public/bc/icf/systemloginjs` | **Active** |
+| Direct open of `…/systemloginjs?sap-client=400` | Blank page (service root; logon-page subpath still TBD) |
+| CIM logon page HTML / branding | Renders (zetVisions) |
+| `lightspeed.js` + control JS | **OK** (200) — UR not globally broken |
+| Click **Log On** with Network cleared | **No request at all** — click handler never fires |
 
-Blank at the **service root** is suspicious and matches the symptom family in KBA **3423597** / **3267156**, but is not final until F12 shows Status / Content-Type / body. The logon page usually calls a **subpath** under `systemloginjs/…`; that request’s status is decisive.
+**Remaining suspects (revised order):**
 
-**Remaining suspects (in order):**
-
-1. `systemloginjs` returns empty / wrong Content-Type / 403 via Web Dispatcher (confirm with F12 on the blank tab)  
-2. Unified Rendering JS broken (`lightspeed.js`)  
-3. Custom zetVisions System Logon class breaks button handlers while SAP standard works
+1. System Logon JS (`systemloginjs` / `SL_SystemLogin`) not loaded or not initialized on this branded page  
+2. Custom zetVisions `CL_ICF_SYSTEM_LOGIN` subclass / layout breaks button wiring (A/B vs SAP standard)  
+3. Less likely now: UR MIME / Web Dispatcher blocking all public JS (disproven by lightspeed 200s)
 
 ---
 

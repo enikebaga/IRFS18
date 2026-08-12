@@ -20,29 +20,23 @@ Client-side only: UI paints, UR loads, but **Log On does not call the server**. 
 
 `favicon.ico` 404 is irrelevant.
 
-## 1. Capture evidence — do this on the blank tab now
+## 1. Next checks (Log On confirmed dead — no Network)
 
-On the blank `systemloginjs` tab, press **F12**:
+Do these on the **logon page** tab:
 
-1. **Network** → click the document request for `systemloginjs`
-   - Status code (200 / 403 / 404 / 500 / 302?)
-   - **Content-Type** (`application/javascript` / `text/javascript` / `text/html` / empty?)
-   - **Size** (0 bytes vs several KB)
-2. **Response** / **View Page Source** — empty, HTML, or JS (`function`, `SL_SystemLogin`, …)?
-3. Also open:
-   ```text
-   https://vhffecsdci.sap.invite.freudenberg:44300/sap/public/bc/ur/nw7/js/lightspeed.js
-   ```
-   Healthy = long JS source. Blank/HTML/error = UR path also broken.
-
-4. Open the **real** CIM logon URL, F12 → Network, filter `systemloginjs` — note the **full** path (often `/sap/public/bc/icf/systemloginjs/<…>/<…>`) and its status. Root URL blank ≠ conclusive; the subpath used by the logon page is decisive (see KBA 3267156).
+1. **Network** → tick **Disable cache** → filter `systemloginjs` → **F5 reload**  
+   - Any row? Status? If **none**, System Logon JS was never requested (custom page / broken script tags).
+2. **Console** → Default levels → **Errors** on → F5 → copy messages.  
+   In Console also run: `typeof SL_SystemLogin`
+3. **Elements** → click the picker → click **Log On** → note element type and whether it sits in a `<form>` with `sap-system-login` fields.
+4. **Basis A/B (fastest fix test):** SICF → `/sap/bc/webdynpro/zco/zv_menu` (and `zv_menu_reset`) → Error Pages → System Logon → Settings → switch from zetVisions custom class to **SAP standard** → save → hard refresh → retry Log On.
 
 | Finding | Action |
 |---|---|
-| 403 / HTML body | RISE Web Dispatcher / auth on `/sap/public/bc/icf/` |
-| 200 + **0 bytes** / empty | Handler/`CL_ICF_SYSTEM_LOGIN_JS` content issue — Basis + BC-MID-ICF-LGN |
-| 200 + `text/html` | Wrong response / rewrite — WD or ICF |
-| 200 + real JS but logon still dead | Check `lightspeed.js` + custom logon class A/B |
+| No `systemloginjs` row on reload | Custom logon HTML missing script include — fix class / layout |
+| `systemloginjs` 403/404/empty | WD / handler — BC-MID-ICF-LGN |
+| `typeof SL_SystemLogin` → `"undefined"` | Init never ran — script missing or errored |
+| SAP standard Log On works; custom dead | zetVisions branding/class regression — vendor + revert |
 
 ## 2. Decision tree (post–SICF-active)
 

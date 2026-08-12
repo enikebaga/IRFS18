@@ -10,19 +10,36 @@
 
 - [x] Public ICF nodes active; Lightspeed OK; Log On → no request on CIM  
 - [x] SOAMANAGER: Global + SAP Implementation, class empty  
-- [x] **CIM `cim_hmenu`:** Service-Specific + **Custom** + **`/ZCO/CL_ICF_CIM_LOGIN`**  
-- [x] **`ZV_MENU_RESET`:** **Use Global Settings** + **SAP Implementation** (`SAP_CHROME`), class **empty**  
-- [ ] **`zv_menu`** (without `_reset`) Configuration — still needed  
-- [ ] **A/B on `cim_hmenu`:** switch to SAP Implementation → Save → test that CIM URL  
-- [ ] Browser test **`zv_menu_reset` URL**: if Log On dead here too → not explained by `/ZCO/CL_ICF_CIM_LOGIN` alone → `systemloginjs` / BC-MID-ICF-LGN  
-- [ ] SE24 `/ZCO/CL_ICF_CIM_LOGIN` with Dev  
+- [x] **CIM `cim_hmenu`:** Service-Specific + **`/ZCO/CL_ICF_CIM_LOGIN`**  
+- [x] **`ZV_MENU`:** Service-Specific + **Custom** + **`/ZCO/CL_ICF_CIM_LOGIN`** (client 400 / EN) — **same class**  
+- [x] **`ZV_MENU_RESET`:** Global + SAP Implementation, class empty  
+- [ ] **A/B now on this `ZV_MENU` dialog:** SAP Implementation → ✓ → Save → test `zv_menu` URL  
+- [ ] SE24 `/ZCO/CL_ICF_CIM_LOGIN` with Dev if A/B fixes Log On  
+- [ ] `zv_menu_reset` / SOAMANAGER still dead after CIM fix → separate BC-MID-ICF-LGN track  
 
-### How to read the two CIM-related services
+### Service map
 
-| Service | Logon config | Implication |
+| Service | Logon | Class |
 |---|---|---|
-| `cim_hmenu` | Custom `/ZCO/CL_ICF_CIM_LOGIN` | A/B this class for branded CIM logon |
-| `ZV_MENU_RESET` | Global SAP standard | Dead Log On here ≠ that custom class; separate/global JS issue |
+| `cim_hmenu` | Service-specific custom | `/ZCO/CL_ICF_CIM_LOGIN` |
+| `ZV_MENU` | Service-specific custom | `/ZCO/CL_ICF_CIM_LOGIN` |
+| `ZV_MENU_RESET` | Global SAP | (none) |
+| SOAMANAGER | Global SAP | (none) |
+
+## A/B clicks (**do this now** on the open `ZV_MENU` Configuration)
+
+1. Select **SAP Implementation** (deselect Custom Implementation).  
+2. Class `/ZCO/CL_ICF_CIM_LOGIN` should no longer apply (field greys out).  
+3. Confirm **✓** / Continue.  
+4. **Save** the service.  
+5. Incognito →  
+   `https://vhffecsdci.sap.invite.freudenberg:44300/sap/bc/webdynpro/zco/zv_menu?sap-client=400&sap-language=EN`  
+   → Ctrl+F5 → Network clear → Log On.  
+
+| Result | Next |
+|---|---|
+| Works / real auth error | Cause = **`/ZCO/CL_ICF_CIM_LOGIN`** → Dev fixes class; leave SAP Implementation until then |
+| Still dead | Tell me; check Adjust Links and Images + browser `systemloginjs` |
 
 ## Ignore for this incident
 

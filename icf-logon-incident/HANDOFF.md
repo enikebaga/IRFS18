@@ -2,12 +2,14 @@
 
 ## Symptom
 
-On S/4HANA 2023 (CSD client 400), ICF System Logon **Log On** and **Change Password** do nothing (no HTTP request in browser Network). Affects:
+On S/4HANA 2023 (CSD client 400), ICF System Logon **Log On** with User & Password does nothing (no HTTP request in browser Network). This is **not CIM-only**:
 
-- Custom: `https://vhffecsdci.sap.invite.freudenberg:44300/sap/bc/webdynpro/zco/zv_menu?…`
-- Standard: `https://vhffecsdci.sap.invite.freudenberg:44300/sap/bc/webdynpro/sap/appl_soap_management?sap-client=400&sap-language=EN`
+- Custom: `…/sap/bc/webdynpro/zco/zv_menu?…`
+- **SAP standard WD:** `…/sap/bc/webdynpro/sap/appl_soap_management?sap-client=400&sap-language=EN` (SOAMANAGER) — same Log On failure
 
-**Forgot your password?** link still works.
+**Forgot your password?** link still works (where shown).
+
+*(Separate/unrelated if you later reach SOAMANAGER via SSO: the “client IBC” consistency warning — Note 2353589.)*
 
 ## Evidence
 

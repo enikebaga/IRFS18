@@ -2,7 +2,7 @@
 
 **Incident:** Systemwide web System Logon — Log On / Change Password do nothing; “Forgot your password?” still works  
 **System:** SAP S/4HANA 2023 · SAP_BASIS 7.58 · SAP_UI 7.58 SP2 (SAPK-75802INSAPUI) · RISE (SAP-managed Web Dispatcher)  
-**Seen on:** zetVisions CIM (`/sap/bc/webdynpro/zco/zv_menu`, …) **and** SAP standard SOAMANAGER (`/sap/bc/webdynpro/sap/appl_soap_management`)
+**Scope clarification:** The Log On failure is **not exclusive to CIM**. Form logon with User & Password also fails on **SAP standard Web Dynpro**, e.g. SOAMANAGER (`/sap/bc/webdynpro/sap/appl_soap_management`). Same host/client as CIM.
 
 ## Verdict
 

@@ -2,7 +2,7 @@
 
 ## Verdict
 
-Systemwide **ICF System Logon** JS handlers broken. **Forgot password** (link) works; **Log On / Change** do not (no Network). Likely custom System Logon / password-reset implementation. Not zetVisions app code; not SOAMANAGER IBC warning.
+**Systemwide** ICF System Logon JS handlers broken — including **SAP standard** WD (SOAMANAGER), not only CIM. **Forgot password** (link) works; **Log On / Change** do not (no Network). Likely custom System Logon / password-reset implementation applied **globally**. Not zetVisions app code; not the SOAMANAGER IBC warning.
 
 ## Status
 

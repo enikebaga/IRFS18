@@ -3,18 +3,22 @@
 ## Status
 
 - [x] SICF: `/sap/public/bc/icf/systemloginjs` **active**
-- [x] Real CIM logon page reproduced:  
-  `https://vhffecsdci.sap.invite.freudenberg:44300/sap/bc/webdynpro/zco/zv_menu?sap-wd-client=400&sap-language=EN`  
-  — zetVisions branded System Logon; Log On / Change Password present; page HTML renders  
-  — DOM shows Lightspeed/UR `2.42.1` (`data-sap-ls-system-runtimeversion`), `UCF_System` / `/sap/public/bc/ur/nw7`  
-  — DevTools reports **2 Console errors** (red badge) — **not yet read**
-- [ ] Open **Console** tab → copy the 2 error messages (and any linked script URL)
-- [ ] Network: filter `systemloginjs` / `lightspeed` / `domainrelax` / failed (red) rows
+- [x] Real CIM logon page reproduced (`zv_menu`, zetVisions branding)
+- [x] UR/Lightspeed working enough to load control JS (`InputField.js`, `PasswordFieldDelegate.js`, …) — Network **200**, initiator `lightspeed.js`
+- [x] Console main feed can look **empty** while badge still shows issues/errors — must force Errors visible + reload
+- [ ] Console: enable **Errors**, reload logon page, copy the 2 messages
+- [ ] Network: filter `systemloginjs` on full reload — present? status?
+- [ ] Network: clear → click **Log On** → any new request appear?
 - [ ] A/B: SAP standard System Logon vs zetVisions custom class
 
 ### Note on the earlier Console 404
 
 `Failed to load resource: 404` pointing at `:44300/favicon.ico` means only the site icon is missing. It does **not** mean `systemloginjs` returned 404.
+
+### What the Network screenshot already proves
+
+- Unified Rendering / `lightspeed.js` is **not** completely broken (controls load from it).
+- Visible rows are all **200** — the failure is likely a **missing** `systemloginjs` request, a failed row scrolled off / filtered out, or a JS init error that never attaches the Log On click handler (hence no POST when clicked).
 
 ## 1. Capture evidence — do this on the blank tab now
 

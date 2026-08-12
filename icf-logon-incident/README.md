@@ -65,27 +65,20 @@ If those URLs return **200** with real JavaScript and Console is clean, skip to 
 
 ## Fix path A — Activate `systemloginjs` (most common)
 
+**Status:** SICF node is already **active** — skip activation; still verify **browser reachability** via `:44300` (Web Dispatcher).
+
 **Refs:** KBA [2900689](https://userapps.support.sap.com/sap/support/knowledge/en/2900689), [3423597](https://userapps.support.sap.com/sap/support/knowledge/en/3423597), [3194434](https://userapps.support.sap.com/sap/support/knowledge/en/3194434)
 
-1. Transaction **SICF** → Service Name `systemloginjs` (or path `/sap/public/bc/icf/systemloginjs`).
-2. Ensure the **entire path** is active:
-   - `/default_host`
-   - `/sap`
-   - `/public`
-   - `/bc`
-   - `/icf`
-   - `/systemloginjs`
-3. Right-click → **Activate Service** (and parent nodes if grey).
-4. Also activate related public nodes commonly required for System Logon / UR:
+1. ~~Transaction **SICF** → activate `systemloginjs`~~ — **done / confirmed active**.
+2. Also confirm related public nodes are active:
    - `/sap/public/bc/ur`
    - `/sap/public/bc/icons`
    - `/sap/public/bc/icf` (parent)
-5. Hard-refresh the browser (or clear cache) and retest Log On / Change Password.
-6. Optional sanity check: open  
-   `https://<host>:44300/sap/public/bc/icf/systemloginjs`  
-   — must **not** be 403/404 (expect JS content or a benign public response, not an HTML logon trap).
-
-On RISE, if SICF shows the node active but the Web Dispatcher still returns 403, open an **SAP RISE / BTP Ops** ticket to allow `/sap/public/bc/icf/` (and `/sap/public/bc/ur/`) through the managed Web Dispatcher.
+3. From a workstation that uses the failing URL, open:
+   - `https://<host>:44300/sap/public/bc/icf/systemloginjs`
+   - `https://<host>:44300/sap/public/bc/ur/nw7/js/lightspeed.js`  
+   Expect raw JavaScript. If you get HTML logon, 403, or 500 → not truly reachable from the client path.
+4. On RISE, if SICF is active but the Web Dispatcher still returns 403/HTML, open an **SAP RISE / BTP Ops** ticket to allow `/sap/public/bc/icf/` (and `/sap/public/bc/ur/`) through the managed Web Dispatcher.
 
 ---
 

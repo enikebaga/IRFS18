@@ -8,13 +8,15 @@
 
 This is almost certainly a **client-side JavaScript failure on the ICF System Logon page**, not a Web Dynpro application bug and not a wrong username/password. The HTML/branding renders, but the script that wires the **Log On** / **Change** buttons never becomes active — so no (or only a hollow) submit happens, with no server-side error.
 
-**Primary suspect (highest match to symptom):** inactive or unreachable ICF node
+### Status update (SICF check)
 
-```text
-/sap/public/bc/icf/systemloginjs
-```
+`/sap/public/bc/icf/systemloginjs` is **active** in SICF (path `default_host → sap → public → bc → icf → systemloginjs`, black/blue = active). That rules out the “forgotten inactive node” variant of KBA **2900689**, but **does not prove the browser receives working JS** via the user URL (`…:44300` / Web Dispatcher). Next proof is F12 Network / direct URL test (below).
 
-Exact match for SAP KBAs **2900689** and **3423597** (“Logon button … no action is triggered” / “click Logon button no response”), typically with HTTP **403** or **404** on that path in the browser Network tab.
+**Remaining suspects (in order):**
+
+1. Web Dispatcher / RISE path returns **403/HTML logon trap** for `systemloginjs` or UR scripts even though SICF is active  
+2. Unified Rendering JS broken (`lightspeed.js` / `domainrelax.js` → 500 or HTML-as-JS)  
+3. Custom zetVisions System Logon class breaks button handlers while SAP standard works
 
 ---
 

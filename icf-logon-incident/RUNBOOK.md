@@ -1,33 +1,45 @@
 # Runbook — Unresponsive CIM Log On button
 
-## 1. Capture evidence (2 min)
+## Status
 
-On failing URL with F12 → Network + Console:
+- [x] SICF: `/sap/public/bc/icf/systemloginjs` **active** (inactive-node theory ruled out)
+- [ ] Browser proves JS actually loads with **HTTP 200 + `application/javascript`** (not HTML)
+- [ ] Console clean on logon page
+- [ ] A/B: SAP standard System Logon vs zetVisions custom class
 
-- [ ] Status of `/sap/public/bc/icf/systemloginjs`
-- [ ] Status of `/sap/public/bc/ur/nw7/js/lightspeed.js`
-- [ ] Any Console `ReferenceError` / `Unexpected token '<'`
-- [ ] Click Log On — confirm **zero** application request vs a failed POST
+## 1. Capture evidence (2 min) — do this next
 
-## 2. Decision tree
+On the **same** failing URL (`https://<host>.sap.invite.freudenberg:44300/...`), F12 → Network + Console:
+
+- [ ] Reload logon page; filter `systemloginjs`, `lightspeed`, `domainrelax`
+- [ ] For each script: Status = ?  Content-Type = ?  Response starts with `function`/`var` or with `<html`?
+- [ ] Console errors (`UCF_LS`, `ur_relax`, `Unexpected token '<'`, `SL_SystemLogin`)
+- [ ] Click Log On — any POST at all?
+
+Also open directly in the browser address bar:
 
 ```text
-systemloginjs or lightspeed → 403/404?
-  YES → SICF activate /sap/public/bc/icf/systemloginjs (+ /sap/public/bc/ur)
-        Still 403 via :44300? → RISE Web Dispatcher ticket for /sap/public/bc/icf|ur
-  NO, → 500 on *.js?
-  YES → SE38 WDG_MAINTAIN_UR_MIMES (force deploy)
-  NO, all 200 + clean console?
-  YES → SICF: switch System Logon to SAP standard (disable zetVisions custom class)
-        Works? → vendor fix for custom CL_ICF_SYSTEM_LOGIN subclass
+https://<host>.sap.invite.freudenberg:44300/sap/public/bc/icf/systemloginjs
+https://<host>.sap.invite.freudenberg:44300/sap/public/bc/ur/nw7/js/lightspeed.js
 ```
 
-## 3. SICF activate (copy-paste path)
+- Pass = raw JS text  
+- Fail = logon HTML, 403, 404, 500, or blank
+
+## 2. Decision tree (post–SICF-active)
 
 ```text
-/default_host/sap/public/bc/icf/systemloginjs
-/default_host/sap/public/bc/ur
-/default_host/sap/public/bc/icons
+Via :44300, systemloginjs / lightspeed → 403 / 404 / HTML logon page?
+  YES → RISE Web Dispatcher / path rewrite ticket (/sap/public/bc/icf|ur)
+        Compare same URLs on direct app-server host if accessible
+
+  → 500 on *.js?
+  YES → SE38 WDG_MAINTAIN_UR_MIMES (force deploy); check /sap/public/bc/ur active
+
+  → 200 + real JS, but Console still errors / buttons dead?
+  YES → SICF on zv_menu / zv_menu_reset:
+        Error Pages → System Logon → switch custom class to SAP standard
+        Works? → zetVisions CL_ICF_SYSTEM_LOGIN subclass / branding JS
 ```
 
 ## 4. Retest

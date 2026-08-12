@@ -4,21 +4,21 @@
 
 - [x] SICF: `/sap/public/bc/icf/systemloginjs` **active**
 - [x] Real CIM logon page reproduced (`zv_menu`, zetVisions branding)
-- [x] UR/Lightspeed working enough to load control JS (`InputField.js`, `PasswordFieldDelegate.js`, …) — Network **200**, initiator `lightspeed.js`
-- [x] Console main feed can look **empty** while badge still shows issues/errors — must force Errors visible + reload
-- [ ] Console: enable **Errors**, reload logon page, copy the 2 messages
-- [ ] Network: filter `systemloginjs` on full reload — present? status?
-- [ ] Network: clear → click **Log On** → any new request appear?
-- [ ] A/B: SAP standard System Logon vs zetVisions custom class
+- [x] UR/Lightspeed working — control JS **200** via `lightspeed.js`
+- [x] **Confirmed: click Log On after Network clear → no request at all** (no POST/GET). Button handler never runs.
+- [ ] Network on **full reload**: filter `systemloginjs` — any row? status?
+- [ ] Console (Errors on) after reload — 2 messages
+- [ ] Elements: Inspect **Log On** — tag / `onclick` / surrounding `<form>`
+- [ ] Console eval: `typeof SL_SystemLogin` (or similar)
+- [ ] **A/B high priority:** SICF System Logon → SAP standard class (disable zetVisions custom)
+
+### Confirmed symptom
+
+Client-side only: UI paints, UR loads, but **Log On does not call the server**. Not a password/auth/SAML problem at this stage.
 
 ### Note on the earlier Console 404
 
-`Failed to load resource: 404` pointing at `:44300/favicon.ico` means only the site icon is missing. It does **not** mean `systemloginjs` returned 404.
-
-### What the Network screenshot already proves
-
-- Unified Rendering / `lightspeed.js` is **not** completely broken (controls load from it).
-- Visible rows are all **200** — the failure is likely a **missing** `systemloginjs` request, a failed row scrolled off / filtered out, or a JS init error that never attaches the Log On click handler (hence no POST when clicked).
+`favicon.ico` 404 is irrelevant.
 
 ## 1. Capture evidence — do this on the blank tab now
 

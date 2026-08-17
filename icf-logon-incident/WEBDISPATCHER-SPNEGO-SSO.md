@@ -187,18 +187,21 @@ Fails if any of these is true:
 ### ECS Web Dispatcher ticket (paste)
 
 ```text
-Please confirm Web Dispatcher config for SPNego via public hostnames
-cim.freudenberg.com and test-cim.freudenberg.com (CSD):
+Please maintain ECS → Maintain System Parameters → Static (Web Dispatcher)
+for SPNego/SSO via public hostnames cim.freudenberg.com and
+test-cim.freudenberg.com (backend SID CSD):
 
-1) SAPSSLS.pse serves public cert with SAN for both hostnames; WD reload done.
-2) wdisp/system_* routes SRCVHOST=cim.freudenberg.com / test-cim... to SID CSD
-   with required SRCURL (/sap/...).
-3) Host header of the browser request is forwarded to the backend (not replaced
-   by internal vhffecsdci name only).
-4) Provide redacted excerpt of: icm/server_port_*, wdisp/system_*,
-   icm/HTTP/mod_* / redirect_* for these hosts.
-5) Confirm there is no WD-side "SPNego enable" parameter (we understand SPNego
-   is backend); we need routing/TLS/host header correctness only.
+1) wdisp/system_<n>: add SRCVHOST=cim.freudenberg.com:443;test-cim.freudenberg.com:443
+   (keep existing internal host), SRCURL covering /sap/bc/;/sap/public/;...,
+   SSL_ENCRYPT as today; wdisp/system_conflict_resolution=BEST_MATCH
+2) Prefer HOST_HEADER=PRESERVE (or equivalent) so backend sees public Host
+3) wdisp/add_clientprotocol_header / handle_webdisp_ap_header as required
+4) SAPSSLS.pse SAN must include both public hostnames; reload WD after Static apply
+5) On CSD Static (if in scope): icm/trusted_reverse_proxy_*; login/create_sso2_ticket;
+   login/accept_sso2_ticket; login/ticket_only_by_https; login/ticket_only_to_host=0
+6) Confirm HTTPURLLOC client 400 has cim.freudenberg.com / test-cim entries
+
+Please send back the resulting wdisp/system_* lines (redacted).
 ```
 
 ### Basis ABAP ticket (paste)

@@ -2,18 +2,62 @@
 
 **Context:** SSO fails after redirect/short link to `cim.freudenberg.com` (and `test-cim.freudenberg.com`). ECS Web Dispatcher terminates TLS (see certificate handover). Question: *Where in the Web Dispatcher do you “activate SSO / SPNego”?*
 
-## Short answer
+## Update: tickets OK for both hosts — SSO only on SAP hostname
 
-**There is no Web Dispatcher profile switch that “turns on SPNego.”**  
-SPNego/Kerberos is authenticated on the **ABAP backend** (transaction **SPNEGO**, parameters `spnego/enable`, keytab). The Web Dispatcher only:
+**Verified:** Kerberos tickets issued for:
 
-1. Terminates HTTPS for the public hostname  
-2. Routes the request to the correct SID  
-3. Forwards headers so the backend sees the right host  
+- `HTTP/vhffecspci.fra3.sap.invite.freudenberg`
+- `HTTP/cim.freudenberg.com`
 
-If the browser hostname (`cim.freudenberg.com`) is not covered by **AD SPN + ABAP SPNEGO keytab + WD routing/TLS**, SSO breaks after the short-link redirect.
+So browser + AD SPNs are OK. If SSO still fails only on `cim.freudenberg.com`, the break is almost always **after** the ticket exists: Web Dispatcher **Host / header handling**, or ABAP **keytab / SPNEGO** not accepting that principal.
 
-When SPNego itself already works (e.g. on the internal host) but fails after redirect to the short link, ECS **Maintain System Parameters → Static** is used to keep **host routing, Host header, cookies/tickets, and trusted reverse proxy** aligned with `cim.freudenberg.com`.
+### Do these parameters forward “SPNEGO auth context”?
+
+| Parameter | Forwards SPNEGO (`Authorization: Negotiate`)? | Real role |
+|---|---|---|
+| **`wdisp/system_<x>`** (+ **`SRCVHOST`**, **`HOST_HEADER=PRESERVE`**) | Indirectly **yes — critical** | Routes `cim.freudenberg.com` to CSD and should **keep Host** so ABAP picks SPN `HTTP/cim.freudenberg.com`. If Host is replaced with the internal name, backend may try the wrong principal → SSO fails though the browser had the right ticket. |
+| **`wdisp/ssl_auth`** | **No** | SSL **client certificate** between WD ↔ app server (`0/1/2`). Not Kerberos/SPNEGO. |
+| **`wdisp/add_xforwardedfor_header`** | **No** | Only adds **`X-Forwarded-For`** (client IP). Does **not** carry Negotiate/SPNEGO. |
+
+**Fact:** Web Dispatcher does **not** terminate SPNEGO. It must **forward** the browser’s `Authorization: Negotiate …` header unchanged to ICM. There is no WD parameter named “forward SPNEGO.” Failure modes are: strip header (mod/filter), wrong SID routing, or **Host rewrite** so ABAP validates against the wrong SPN.
+
+Also check (not the three above):
+
+- `icm/HTTP/mod_*` action file — must **not** `RemoveHeader Authorization` / similar  
+- Prefer **`HOST_HEADER=PRESERVE`** (or no Host replace) for the `cim.freudenberg.com` `wdisp/system_*` line  
+
+`icm/trusted_reverse_proxy_*` is for trusting WD **SSL client cert** / forwarded SSL identity — useful for X.509, **not** the mechanism that carries Kerberos Negotiate.
+
+### Verification checklist (what to ask ECS / Basis)
+
+1. **WD forwards SPNEGO for `cim.freudenberg.com`**
+   - In browser F12 on failing URL: request to WD includes **`Authorization: Negotiate …`**
+   - On WD / ICM: confirm that header is still present on the backend hop (no mod rule removing it)
+   - Confirm `wdisp/system_*` **`SRCVHOST`** includes `cim.freudenberg.com` and Host is **preserved**
+
+2. **SPNEGO accepts `HTTP/cim.freudenberg.com`**
+   - Transaction **`SPNEGO`**: principal / SPN list includes **`HTTP/cim.freudenberg.com`**
+   - Same keytab version as AD (regenerated after SPN was added)
+
+3. **`dev_icm` for requests via `cim.freudenberg.com`**
+   - Reproduce once; in `dev_icm` / SPNEGO trace look for Negotiate / GSS / keytab errors vs success for that Host
+   - Compare one success via `vhffecspci…` vs failure via `cim.freudenberg.com` at the same second
+
+4. **Keytab contains the principal**
+   - On the keytab used by SPNEGO (ECS/Basis): list principals — must show **`HTTP/cim.freudenberg.com@<REALM>`** (tooling depends on SSO product / `spnego` keytab; Basis confirms)
+   - Ticket issued in AD ≠ keytab on ABAP; both are required
+
+### Minimal parameter focus for this symptom
+
+| Where | Parameter | Action |
+|---|---|---|
+| WD | **`wdisp/system_<x>`** | `SRCVHOST=…cim.freudenberg.com…`, **`HOST_HEADER=PRESERVE`** |
+| WD | mod / auth filters | Do **not** strip `Authorization` |
+| WD | `wdisp/ssl_auth` / `add_xforwardedfor_header` | **Not** the SPNEGO fix |
+| ABAP | keytab + **SPNEGO** | Principal `HTTP/cim.freudenberg.com` present and enabled |
+| ABAP | `spnego/enable` | Already on |
+
+---
 
 ---
 

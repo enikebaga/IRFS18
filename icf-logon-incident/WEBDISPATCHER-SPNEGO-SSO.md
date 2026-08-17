@@ -13,7 +13,78 @@ SPNego/Kerberos is authenticated on the **ABAP backend** (transaction **SPNEGO**
 
 If the browser hostname (`cim.freudenberg.com`) is not covered by **AD SPN + ABAP SPNEGO keytab + WD routing/TLS**, SSO breaks after the short-link redirect.
 
+When SPNego itself already works (e.g. on the internal host) but fails after redirect to the short link, ECS **Maintain System Parameters → Static** is used to keep **host routing, Host header, cookies/tickets, and trusted reverse proxy** aligned with `cim.freudenberg.com`.
+
 ---
+
+## ECS: Maintain System Parameters → Static (what to maintain for SSO)
+
+Use this when SPNego works on the known internal URL but SSO breaks on **`cim.freudenberg.com`** / **`test-cim.freudenberg.com`**.  
+Maintain the **Web Dispatcher** parameters (and, if the console also exposes the **ABAP/ICM** system, the backend trust/ticket parameters). Exact allow-list varies by ECS landscape—if a name is missing in the UI, open an ECS ticket with the same list.
+
+### A. Web Dispatcher (Static) — primary for short-hostname SSO
+
+| Parameter | Purpose | Typical value / action for Freudenberg CIM |
+|---|---|---|
+| **`wdisp/system_<n>`** | Map incoming host → SID CSD | Include **`SRCVHOST=cim.freudenberg.com:443;test-cim.freudenberg.com:443`** (and existing internal host if needed), plus **`SRCURL`** for `/sap/...` (webdynpro, public, etc.), **`SSL_ENCRYPT=1`** (or as today) |
+| **`wdisp/system_conflict_resolution`** | Ambiguous URL/host matches | **`BEST_MATCH`** |
+| **`icm/server_port_<n>`** | HTTPS listener | HTTPS on **443** for public short name (avoid relying on `:44300` for Chromium SPNego) |
+| **`icm/HTTP/mod_<n>`** | Rewrite / header rules | Point to action file that preserves public Host / sets access-point headers if ECS uses mod rules for CIM |
+| **`icm/HTTP/redirect_<n>`** | HTTP→HTTPS or path redirect | Only if short link must redirect; **`HOST=`** must stay **`cim.freudenberg.com`** (not internal only) |
+| **`icm/host_name_full`** | Canonical WD FQDN | Set only if ECS requires it; do **not** overwrite public SAN hosts—cert SANs still need `cim.freudenberg.com` |
+| **`wdisp/add_clientprotocol_header`** | Tell backend original protocol | **`TRUE`** / `1` (so HTTPS is visible to apps) |
+| **`wdisp/handle_webdisp_ap_header`** | Absolute URL / access points | Enable if absolute links/cookies must reflect public host |
+| **`wdisp/add_xforwardedfor_header`** | Client IP chain | As per security standard (often on) |
+| **`HOST_HEADER`** (subparam of `wdisp/system_*`, newer WD) | Preserve vs replace Host | Prefer **`PRESERVE`** so backend/SPNego see **`cim.freudenberg.com`**. **`REPLACE`** only if ECS/backend explicitly requires internal host (then SPN must match that host instead) |
+
+Example shape (indexes must match your existing `wdisp/system_*` numbering—**extend**, don’t blindly paste):
+
+```text
+wdisp/system_conflict_resolution = BEST_MATCH
+
+wdisp/system_<n> = SID=CSD, MSHOST=<ms-host>, MSPORT=<ms-http-port>,
+  SRCVHOST=cim.freudenberg.com:443;test-cim.freudenberg.com:443;vhffecsdci.sap.invite.freudenberg:44300,
+  SRCURL=/sap/bc/;/sap/public/;/sap/opu/;/sap/saml2/;/sap/bc/webdynpro/,
+  SSL_ENCRYPT=1
+```
+
+### B. ABAP backend (Static) — trust WD + tickets after SPNego
+
+Maintain on **CSD** if exposed in the same ECS Parameter app (or ask Basis/ECS):
+
+| Parameter | Purpose | Typical for SSO behind WD |
+|---|---|---|
+| **`icm/trusted_reverse_proxy_0`** (or `_1`, …) | Trust Web Dispatcher as reverse proxy | SUBJECT/ISSUER of WD client cert as per ECS doc (required when WD terminates SSL / forwards identity) |
+| **`icm/HTTPS/trust_client_with_subject`** | Legacy trust (if still used) | Only if not fully on `icm/trusted_reverse_proxy_*` |
+| **`icm/HTTPS/trust_client_with_issuer`** | Legacy trust issuer | Same |
+| **`login/create_sso2_ticket`** | Issue MYSAPSSO2 after auth | Often **`2`** |
+| **`login/accept_sso2_ticket`** | Accept logon tickets | **`1`** |
+| **`login/ticket_only_by_https`** | Tickets only on HTTPS | **`1`** |
+| **`login/ticket_only_to_host`** | Restrict ticket to one host | **`0`** or unset when users switch between `vhffecsdci…` and `cim.freudenberg.com` (KBA **3441950** family) |
+| **`spnego/enable`** | SPNego on AS ABAP | Already OK in your landscape—confirm still **on** |
+| **`is/HTTP/show_detailed_errors`** | Debug only | Leave default in prod |
+
+**Not a profile parameter but mandatory with short host:** table **`HTTPURLLOC`** (client 400) entries for `cim.freudenberg.com` / `test-cim.freudenberg.com` so generated absolute URLs/cookies match the browser host.
+
+### C. What you do **not** maintain in ECS Static for “SSO on”
+
+| Not applicable | Why |
+|---|---|
+| A parameter named `spnego/activate` on Web Dispatcher | Does not exist |
+| AD `setspn` / keytab | AD + transaction **SPNEGO** (Basis), not ECS Static |
+| SICF logon procedure | SICF, not profile Static |
+
+### D. Apply order
+
+1. ECS Static: WD **`wdisp/system_*` + `SRCVHOST`** for public hosts (+ conflict resolution).  
+2. Confirm **`SAPSSLS`** cert SAN includes those hosts (separate ECS cert activity).  
+3. Backend Static: **`icm/trusted_reverse_proxy_*`**, ticket params, **`login/ticket_only_to_host`**.  
+4. **HTTPURLLOC** for public hosts.  
+5. Restart/reload as ECS requires for **Static** parameters.  
+6. Test from domain PC: `https://cim.freudenberg.com/...` on **443**.
+
+---
+
 
 ## 1. What to request from SAP ECS (Web Dispatcher)
 
